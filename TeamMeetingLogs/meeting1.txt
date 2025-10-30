@@ -1,0 +1,14 @@
+Date: 10/27/2025
+Meeting with TA
+Minutes: 15
+Time: 6:00-15 PM
+
+First Meeting:
+
+-Basics were only covered, a brief introduction to what will happen
+-Weekly meetings are at the same time
+-Make sure that each person makes a contribution before meetings
+-2 to 5 commits (small contributions, not big since we got a big group)
+-Make sure project board is up to date before meetings
+-Minutes of meeting is updated each time
+-We are fine for now, we don’t have to work on anything until this week's Lab when we start our boards, just work on the basic stuff, which we already did prior

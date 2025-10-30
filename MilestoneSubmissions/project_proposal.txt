@@ -1,0 +1,22 @@
+Team Number: 012-3
+Team name: Quizlet 2
+
+Name                        Email                               Github
+Zachary Bolon               zabo1539@colorado.edu               zbolon
+Max Caron                   max.caron@colorado.edu              max-caron518
+Leydi Maya                  leydi.maya@colorado.edu             salteaa
+Ronan Goodline              rogo5092@colorado.edu               ronangood
+Devin Renn                  devin.renn@colorado.edu             DevinRenn
+Roberto Valenzuela Sierra   joba4016@colorado.edu              ruken1
+
+
+Application Name: QuiC
+Application Description: Users will be able to create and save set(s) of flashcards for studying and learning. Users will be able to share their sets with others.
+Audience: Students mostly, but anyone that is trying to learn a subject. We are aiming to help people better learn and master subjects with which they are having difficulty.
+Vision Statement: For students, who need help studying. The Quic is a website that allows users to create and save flashcards. Unlike Quizlet, our product will be free and accessible to everybody
+https://github.com/CU-CSCI3308-Fall2025/group-project-zbolon.git
+Development Methodology: Kanban board for tracking progress and discord for communication
+Communication plan: We will be using discord to communicate to each other on how we and any concerns that we need to share. We will be using kanban through discord which will also share how we are individually doing on our progress.
+Meeting plan: Meeting with TA on Mondays at 6:00 . We do not have a set day and time for team meetings since our schedules are all over the place, but we will make sure to meet once every 2 weeks to put our work together. Since our group is 6 we will split people up into small groups to work on features and they will be able to communicate and work together while they are making that feature.
+
+The wireframe and case diagram are images in this folder

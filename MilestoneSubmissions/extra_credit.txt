@@ -1,0 +1,7 @@
+Potential Risks:
+
+1. If sensitive user data like passwords isn't stored in databases correctly, there could be a data leak. This could be a very severe problem but can be prevented by hashing users' passwords.
+2. System downtime would be severe, not too severe though, it could cause slower usage of the page, cause users to lose their work, it is also bad for those who want to study last minute. We could fix this by using cloud hosting, backups, keep flashcards how they looked/were before the downtime occurred.
+3. Data loss/corruption could be a potential severe risk. This can be prevented by implementing regular database backups and making sure our database follows ACID.
+4. Copyright violations could be a mid risk, users could plagarize content into cards. The terms that have copyright should be applied and AI detection tools should be used too in order to track copyright without the developers being there for each user.
+5. If we too many add features without proper planning or care, it could severely impact our wbesite and cause users to get confused with low usage. We could improve by careful planning and deciding the important featues that should be implemented first based on importance.
