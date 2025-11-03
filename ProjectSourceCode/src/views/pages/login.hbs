@@ -1,0 +1,24 @@
+<h2 style="text-align: center;">Login</h2>
+{{#if message}}
+  <div
+    style="text-align: center; color: {{#if error}}red{{else}}green{{/if}}; font-weight: bold; margin-bottom: 10px;"
+  >
+    {{message}}
+  </div>
+{{/if}}
+<form action="/login" method="POST" style="text-align: center;">
+<br>
+    <label>Username: </label>
+    <input type="text" name="username" required/>
+    <br>
+    <br>'
+    <label>Password: </label>
+    <input type="text" name="password" required/>
+    <br>
+    <br>
+    <button type="submit" style="background-color: rgb(0, 132, 255); color: white;">Login</button>
+</form>
+<br>
+<p style="text-align: center;">
+    Don't have an account? <a href="/register">Register here</a>
+</p>a
