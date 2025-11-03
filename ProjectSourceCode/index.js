@@ -65,8 +65,47 @@ app.use(
 
 
 // API Routes
-app.get("/login", (req, res) => {
-    res.render("pages/login");
+app.get('/', (req, res) => {
+  res.render('pages/login', { layout: 'main' });
+});
+
+app.get('/login', (req, res) => {
+  res.render('pages/login', { layout: 'main' });
+});
+
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [
+      username,
+    ]);
+    if (!user) {
+      return res.render('pages/login', {
+        layout: 'main',
+        message: 'Username does not exist or incorrect, please either register or try again.',
+        error: true,
+      });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+if (!passwordMatch) {
+      return res.render('pages/login', {
+        layout: 'main',
+        message: 'Incorrect password, please try again.',
+        error: true,
+      });
+    }
+    if (passwordMatch) {
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+      };
+      res.redirect('/discover');
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+   res.status(500).send(error.message); 
+  }
+
 });
 
 
