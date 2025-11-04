@@ -1,0 +1,17 @@
+Date: 11/03/2025
+Meeting with TA
+Minutes: 15
+Time: 6:00-15 PM
+
+Second Meeting:
+
+-He will have another meeting with us on Thursday
+-Hopefully the webpage can be setup so that all of us can do our work
+-Make sure to plan out what we will be doing next week
+-You can work on what you are assigned to for the next 4 weeks, as long as you can push consecutively, for example “Added logic to my work” or “Updated the styling” or “Edited this line”, something that shows you made some change to your repo. Maximum of 2-4 commits by each person.
+
+Gave us 3 goals:
+
+Goal 1: Everyone is on the same page with the repo. When you go to the default page (localhost:3000), users should be able to see a blank screen or 'welcome' message.
+Goal 2 - Make sure that each of you has a plan for the next week and an explanation of how you contributed to the project so far.
+Goal 3 - To have demonstrable features and a plan for the week to come reflected on the GitHub project board (both as a team and individually).
