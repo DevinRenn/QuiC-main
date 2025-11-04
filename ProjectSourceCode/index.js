@@ -14,31 +14,31 @@ const axios = require('axios'); // To make HTTP requests from our server.
 // Connect to Database
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
-    extname: 'hbs',
-    layoutsDir: __dirname + '/src/views/layouts',
-    partialsDir: __dirname + '/src/views/partials',
+  extname: 'hbs',
+  layoutsDir: __dirname + '/src/views/layouts',
+  partialsDir: __dirname + '/src/views/partials',
 });
 
 // database configuration
 const dbConfig = {
-    host: 'db', // the database server
-    port: 5432, // the database port
-    database: process.env.POSTGRES_DB, // the database name
-    user: process.env.POSTGRES_USER, // the user account to connect with
-    password: process.env.POSTGRES_PASSWORD, // the password of the user account
+  host: 'db', // the database server
+  port: 5432, // the database port
+  database: process.env.POSTGRES_DB, // the database name
+  user: process.env.POSTGRES_USER, // the user account to connect with
+  password: process.env.POSTGRES_PASSWORD, // the password of the user account
 };
 
 const db = pgp(dbConfig);
 
 // test the database
 db.connect()
-    .then(obj => {
-        console.log('Database connection successful'); // you can view this message in the docker compose logs
-        obj.done(); // success, release the connection;
-    })
-    .catch(error => {
-        console.log('ERROR:', error.message || error);
-    });
+  .then(obj => {
+    console.log('Database connection successful'); // you can view this message in the docker compose logs
+    obj.done(); // success, release the connection;
+  })
+  .catch(error => {
+    console.log('ERROR:', error.message || error);
+  });
 
 
 // App settings
@@ -50,23 +50,23 @@ app.use(bodyParser.json()); // specify the usage of JSON for parsing request bod
 
 // initialize session variables
 app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        saveUninitialized: false,
-        resave: false,
-    })
+  session({
+    secret: process.env.SESSION_SECRET,
+    saveUninitialized: false,
+    resave: false,
+  })
 );
 
 app.use(
-    bodyParser.urlencoded({
-        extended: true,
-    })
+  bodyParser.urlencoded({
+    extended: true,
+  })
 );
 
 
 // API Routes
 app.get('/', (req, res) => {
-  res.render('pages/login', { layout: 'main' });
+  res.redirect('/login');
 });
 
 app.get('/login', (req, res) => {
@@ -87,7 +87,7 @@ app.post('/login', async (req, res) => {
       });
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
-if (!passwordMatch) {
+    if (!passwordMatch) {
       return res.render('pages/login', {
         layout: 'main',
         message: 'Incorrect password, please try again.',
@@ -103,12 +103,23 @@ if (!passwordMatch) {
     }
   } catch (error) {
     console.error('Error during login:', error);
-   res.status(500).send(error.message); 
+    res.status(500).send(error.message);
   }
 
 });
 
+app.get('/register', (req, res) => {
+  res.render('pages/register');
+});
 
+app.get('/profile', (req, res) => {
+  res.render('pages/profile');
+});
+
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.render('pages/logout');
+});
 
 // Starts Server
 app.listen(3000);
