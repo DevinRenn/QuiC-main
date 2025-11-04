@@ -116,6 +116,10 @@ app.get('/profile', (req, res) => {
   res.render('pages/profile');
 });
 
+app.get('/home', (req, res) => {
+  res.render('pages/home');
+});
+
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.render('pages/logout');
