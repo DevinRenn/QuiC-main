@@ -99,7 +99,7 @@ app.post('/login', async (req, res) => {
         id: user.id,
         username: user.username,
       };
-      res.redirect('/discover');
+      res.redirect('/home');
     }
   } catch (error) {
     console.error('Error during login:', error);
