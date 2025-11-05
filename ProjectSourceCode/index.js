@@ -63,6 +63,8 @@ app.use(
   })
 );
 
+// Serve static files from resources directory
+app.use(express.static(path.join(__dirname, 'src/resources')));
 
 // API Routes
 app.get('/', (req, res) => {
