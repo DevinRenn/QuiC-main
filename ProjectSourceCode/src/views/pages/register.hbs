@@ -1,13 +1,18 @@
-<h2>Register</h2>
+<h2 style="text-align: center;">Register</h2>
 
-<form method = "POST" action = "/register" style="text-align: center;">
-<label for = "username"> Username: </label>
-<input type = "text" name = "username" id = "username" required/>
-
-<label for = "password"> Password: </label>
-<input type = "password" name = "password" id = "password" required/>
-
-<input type = "submit" value = "Register!" />
-
+<form action="/register" method="POST" style="text-align: center;">
+  <br>
+  <label>Username: </label>
+  <input type="text" name="username" required />
+  <br>
+  <br>
+  <label>Password: </label>
+  <input type="text" name="password" required />
+  <br>
+  <br>
+  <button type="submit" style="background-color: rgb(0, 132, 255); color: white;">Register</button>
 </form>
-<p style="text-align: center;"> Already have an account? <a href = "/login">Login!</a></p>
+<br>
+<p style="text-align: center;">
+  Already have an account? <a href="/login">Login here!</a>
+</p>
