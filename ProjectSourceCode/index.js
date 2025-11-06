@@ -114,6 +114,23 @@ app.get('/register', (req, res) => {
   res.render('pages/register');
 });
 
+app.post("/register", async (req, res) => {
+    const username = req.body.username;
+
+    const hash = await bcrypt.hash(req.body.password, 10);
+
+    const query = `INSERT INTO users (username, password) VALUES ($1, $2)`;
+
+    try{
+        await db.none(query, [username, hash]);
+        res.redirect('/login');
+    }
+
+    catch (err) {
+        res.render('pages/register', {message : "Username already exists", error: true});
+    }
+});
+
 app.get('/profile', (req, res) => {
   res.render('pages/profile');
 });
