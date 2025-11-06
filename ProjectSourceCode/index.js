@@ -63,6 +63,12 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.logged_in = req.session.user ? true : false;
+  res.locals.username = req.session.user ? req.session.user.username : null;
+  next();
+});
+
 // Serve static files from resources directory
 app.use(express.static(path.join(__dirname, 'src/resources')));
 
@@ -140,8 +146,9 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy();
-  res.render('pages/logout');
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
 });
 
 app.get('/welcome', (req, res) => {
