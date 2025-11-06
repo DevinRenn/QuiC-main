@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users_to_folders (
 CREATE TABLE IF NOT EXISTS sets (
     set_id SERIAL PRIMARY KEY,
     set_name VARCHAR(100) NOT NULL,
-    set_description varchar(300)
+    set_description VARCHAR(300)
 );
 
 CREATE TABLE IF NOT EXISTS folders_to_sets (
@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS folders_to_sets (
 
 CREATE TABLE IF NOT EXISTS cards (
     card_id SERIAL PRIMARY KEY,
-    front_text VARCHAR(255) NOT NULL,
-    back_text VARCHAR(255) NOT NULL
+    front_text VARCHAR(300) NOT NULL,
+    back_text VARCHAR(300) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sets_to_cards (
