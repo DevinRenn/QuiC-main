@@ -78,7 +78,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('pages/login', { layout: 'main' });
+  res.render('pages/login');
 });
 
 app.post('/login', async (req, res) => {
@@ -121,20 +121,20 @@ app.get('/register', (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-    const username = req.body.username;
+  const username = req.body.username;
 
-    const hash = await bcrypt.hash(req.body.password, 10);
+  const hash = await bcrypt.hash(req.body.password, 10);
 
-    const query = `INSERT INTO users (username, password) VALUES ($1, $2)`;
+  const query = `INSERT INTO users (username, password) VALUES ($1, $2)`;
 
-    try{
-        await db.none(query, [username, hash]);
-        res.redirect('/login');
-    }
+  try {
+    await db.none(query, [username, hash]);
+    res.redirect('/login');
+  }
 
-    catch (err) {
-        res.render('pages/register', {message : "Username already exists", error: true});
-    }
+  catch (err) {
+    res.render('pages/register', { message: "Username already exists", error: true });
+  }
 });
 
 app.get('/profile', (req, res) => {
@@ -152,7 +152,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({ status: 'success', message: 'Welcome!' });
 });
 
 // Starts Server
