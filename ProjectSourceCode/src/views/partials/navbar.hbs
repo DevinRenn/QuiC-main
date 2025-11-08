@@ -29,12 +29,14 @@
               <a class="nav-link" href="/logout">Logout</a>
             </li>
           {{else}}
+          {{#if is_home}}
             <li class="nav-item me-3">
               <a class="nav-link" href="/login">Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/register">Register</a>
             </li>
+          {{/if}}
           {{/if}}
         </ul>
       </div>

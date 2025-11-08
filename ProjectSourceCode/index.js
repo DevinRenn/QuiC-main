@@ -142,7 +142,9 @@ app.get('/profile', (req, res) => {
 });
 
 app.get('/home', (req, res) => {
-  res.render('pages/home');
+  res.render('pages/home', {
+  is_home: true
+  });
 });
 
 app.get('/logout', (req, res) => {
