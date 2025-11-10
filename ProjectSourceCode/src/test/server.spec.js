@@ -27,6 +27,7 @@ describe('Test for GET /welcome:', () => {
   });
 });
 
+// ********************** TESTCASE FOR POST /REGISTER ENDPOINT ***********************
 const generateRandomString = (length) => {
   let result = '';
   const characters =
@@ -37,7 +38,6 @@ const generateRandomString = (length) => {
   }
   return result;
 };
-
 let randomUsername = generateRandomString(10);
 
 describe('Test for POST /register:', () => {
@@ -58,6 +58,30 @@ describe('Test for POST /register:', () => {
       .send({ username: randomUsername, password: 'testpassword' })
       .end((err, res) => {
         expect(res.text.toLowerCase()).to.include("username already exists");
+        done();
+      });
+  });
+});
+
+// ********************** TESTCASE FOR POST /LOGIN ENDPOINT **************************
+describe('Test for POST /login:', () => {
+  it('Positive: /login', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: randomUsername, password: 'testpassword' }) //This username/password should already be in the database
+      .end((err, res) => {
+        res.should.redirectTo(/\/home$/);
+        done();
+      });
+  });
+  it('Negative: /login. Checking invalid username.', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({ username: (randomUsername) + "1", password: 'testpassword' })
+      .end((err, res) => {
+        expect(res.text.toLowerCase()).to.include("incorrect");
         done();
       });
   });
