@@ -1,0 +1,21 @@
+Date: 11/10/2025
+Meeting with TA
+Minutes: 15
+Time: 6:00-15 PM
+
+During Meeting:
+-Each of us explained what our contributions were
+-Showed project board
+-Did a demo
+-Presented release notes and meeting logs
+
+Takeaways:
+-Try to make the website html look good or have a unique functionality, either of those can give you a good score
+-Styling should be done after everything else is done
+-We should try finishing up before break
+-Update the release notes on features
+-We are expected to have group meetings without the TA
+-He will help us on the login page and anything else on Thursday if we come
+-I (Roberto) asked about the welcome page and he says it’s helpful to write one, it will look good for our project and grade
+-Project will be graded by the instructor and 2 other TAs, the average from them is the score we will get
+-Writeup will be graded by instructor
