@@ -45,7 +45,7 @@ describe('Test for POST /register:', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ username: randomUsername, password: 'testpassword' })
+      .send({ name: 'Test user', username: randomUsername, password: 'testpassword' })
       .end((err, res) => {
         res.should.redirectTo(/\/login$/);
         done();
@@ -55,7 +55,7 @@ describe('Test for POST /register:', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ username: randomUsername, password: 'testpassword' })
+      .send({ name: 'Test user', username: randomUsername, password: 'testpassword' })
       .end((err, res) => {
         expect(res.text.toLowerCase()).to.include("username already exists");
         done();
