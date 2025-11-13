@@ -146,15 +146,17 @@ app.post("/register", async (req, res) => {
 // Authentication Middleware.
 const auth = (req, res, next) => {
   if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('/login');
+    // Default to welcome page.
+    return res.redirect('/welcome');
   }
   next();
 };
 
 // Authentication Required
 app.use(auth);
-
+/*
+ALL ROUTES BENEATH THIS POINT CAN ONLY BE ACCESSED BY LOGGED IN USERS
+*/
 app.get('/profile', async (req, res) => {
   const userId = req.session.user.user_id;
 
@@ -172,7 +174,8 @@ app.get('/profile', async (req, res) => {
       user: {
         name: user.name,
         username: user.username
-      }};
+      }
+    };
     res.render('pages/profile', userData);
   } catch (error) {
     console.error('Error fetching profile data:', error);
@@ -182,7 +185,7 @@ app.get('/profile', async (req, res) => {
 
 app.get('/home', (req, res) => {
   res.render('pages/home', {
-  is_home: true
+    is_home: true
   });
 });
 
@@ -190,9 +193,9 @@ app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error('Error during logout:', err);
-      return res.render('pages/logout', { layout: 'main', is_logout: true }); 
+      return res.render('pages/logout', { layout: 'main', is_logout: true });
     }
-    res.render('pages/logout', { layout: 'main', is_logout: true }); 
+    res.render('pages/logout', { layout: 'main', is_logout: true });
   });
 });
 
