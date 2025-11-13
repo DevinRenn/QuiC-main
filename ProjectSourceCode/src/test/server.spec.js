@@ -25,7 +25,6 @@ describe('Test for GET /welcome:', () => {
       });
   });
 });
-
 // ********************** TESTCASE FOR POST /REGISTER ENDPOINT ***********************
 const generateRandomString = (length) => {
   let result = '';

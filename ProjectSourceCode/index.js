@@ -189,6 +189,99 @@ app.get('/welcome', (req, res) => {
   res.render('pages/welcome');
 });
 
+
+// Fetch all folders
+app.get('/folders', async (req, res) => {
+  try {
+    const folders = await db.any('SELECT folder_id, folder_name FROM folders ORDER BY folder_name');
+    res.json({ success: true, folders });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, folders: [] });
+  }
+});
+
+// Create folder
+// Create folder
+app.post('/create_folder', async (req, res) => {
+  const { folder_name } = req.body;
+
+  try {
+    // Check if folder already exists
+    const exists = await db.oneOrNone(
+      'SELECT folder_id FROM folders WHERE folder_name = $1',
+      [folder_name]
+    );
+
+    if (exists) {
+      return res.json({ success: false, message: 'Folder already exists' });
+    }
+
+    const result = await db.one(
+      'INSERT INTO folders (folder_name) VALUES ($1) RETURNING folder_id, folder_name',
+      [folder_name]
+    );
+
+    res.json({ success: true, folder: result });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
+
+
+// Create set in folder
+app.post('/create_set', async (req, res) => {
+  const { set_name, set_description, folder_id } = req.body;
+  try {
+    // Check if a set with the same name exists in the same folder
+    const exists = await db.oneOrNone(
+      `SELECT s.set_id 
+       FROM sets s
+       JOIN folders_to_sets fts ON s.set_id = fts.set_id
+       WHERE s.set_name = $1 AND fts.folder_id = $2`,
+      [set_name, folder_id]
+    );
+
+    if (exists) return res.json({ success: false, message: 'Set already exists in this folder' });
+
+    // Insert the new set
+    const result = await db.one(
+      'INSERT INTO sets (set_name, set_description) VALUES ($1, $2) RETURNING set_id, set_name, set_description',
+      [set_name, set_description]
+    );
+
+    // Link the set to the folder
+    await db.none('INSERT INTO folders_to_sets (folder_id, set_id) VALUES ($1, $2)', [folder_id, result.set_id]);
+
+    res.json({ success: true, set: result });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
+
+
+// Fetch sets for a folder
+app.get('/folders/:folder_id/sets', async (req, res) => {
+  const { folder_id } = req.params;
+  try {
+    const sets = await db.any(
+      `SELECT s.set_id, s.set_name, s.set_description
+       FROM sets s
+       JOIN folders_to_sets f2s ON s.set_id = f2s.set_id
+       WHERE f2s.folder_id = $1
+       ORDER BY s.set_name`,
+      [folder_id]
+    );
+    res.json({ success: true, sets });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, sets: [] });
+  }
+});
+
+
 // Starts Server
 module.exports = app.listen(3000);
 console.log("Server is listening on port 3000");
