@@ -77,6 +77,10 @@ app.get('/', (req, res) => {
   res.redirect('/welcome');
 });
 
+app.get('/welcome', (req, res) => {
+  res.render('pages/welcome');
+});
+
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -139,33 +143,40 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get('/profile', async (req, res) => {
-  // Get the current user ID from session/auth
-  const userId = req.session.user.user_id;
+// Authentication Middleware.
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
 
-  console.log('Session user_id:', userId);
+// Authentication Required
+app.use(auth);
+
+app.get('/profile', async (req, res) => {
+  const userId = req.session.user.user_id;
 
   const user_query = 'SELECT name, username FROM users WHERE user_id = $1';
 
-  try {    
-    // Query the database for user info
+  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
+                          FROM users_to_folders utf
+                          JOIN folders f ON utf.folder_id = f.folder_id
+                          WHERE utf.user_id = $1;`;
+
+  try {
     const user = await db.oneOrNone(user_query, [userId]);
 
-    console.log('Query result:', user);
-
-  const userData = {
-    user: {
-      name: user.name,
-      username: user.username
-    }};
-
-    // Render the profile page with user data
+    const userData = {
+      user: {
+        name: user.name,
+        username: user.username
+      }};
     res.render('pages/profile', userData);
-  }
-
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching profile data:', error);
-    res.status(500).send('Error loading profile');
+    res.render('pages/login');
   }
 });
 
@@ -184,11 +195,6 @@ app.get('/logout', (req, res) => {
     res.render('pages/logout', { layout: 'main', is_logout: true }); 
   });
 });
-
-app.get('/welcome', (req, res) => {
-  res.render('pages/welcome');
-});
-
 
 // Fetch all folders
 app.get('/folders', async (req, res) => {
