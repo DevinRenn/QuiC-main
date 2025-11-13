@@ -104,7 +104,7 @@ app.post('/login', async (req, res) => {
     }
     if (passwordMatch) {
       req.session.user = {
-        id: user.id,
+        user_id: user.user_id,
         username: user.username,
       };
       res.redirect('/home');
@@ -139,8 +139,34 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get('/profile', (req, res) => {
-  res.render('pages/profile');
+app.get('/profile', async (req, res) => {
+  // Get the current user ID from session/auth
+  const userId = req.session.user.user_id;
+
+  console.log('Session user_id:', userId);
+
+  const user_query = 'SELECT name, username FROM users WHERE user_id = $1';
+
+  try {    
+    // Query the database for user info
+    const user = await db.oneOrNone(user_query, [userId]);
+
+    console.log('Query result:', user);
+
+  const userData = {
+    user: {
+      name: user.name,
+      username: user.username
+    }};
+
+    // Render the profile page with user data
+    res.render('pages/profile', userData);
+  }
+
+  catch (error) {
+    console.error('Error fetching profile data:', error);
+    res.status(500).send('Error loading profile');
+  }
 });
 
 app.get('/home', (req, res) => {
