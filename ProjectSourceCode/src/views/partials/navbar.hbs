@@ -13,13 +13,24 @@
       </button>
       <div class="collapse navbar-collapse position-relative" id="navbar-collapse">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/home">Home</a>
-          </li>
+          {{#if is_logout}}
+            <!-- Only show Home on /logout -->
+            <li class="nav-item">
+              <a class="nav-link" href="/home">Home</a>
+            </li>
+          {{else}}
+            <!-- Normal nav items -->
+            <li class="nav-item">
+              <a class="nav-link" href="/home">Home</a>
+            </li>
+          {{/if}}
         </ul>
+
         <a class="navbar-brand position-absolute top-50 start-50 translate-middle" href="/home">
-            <img src="/img/logo3.jpg" alt="QuiC" height="55">
+          <img src="/img/logo3.jpg" alt="QuiC" height="55">
         </a>
+
+        {{#unless is_logout}}
         <ul class="navbar-nav ms-auto">
           {{#if logged_in}}
             <li class="nav-item me-3">
@@ -28,8 +39,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li>
-          {{else}}
-          {{#if is_home}}
+          {{else if is_home}}
             <li class="nav-item me-3">
               <a class="nav-link" href="/login">Login</a>
             </li>
@@ -37,8 +47,8 @@
               <a class="nav-link" href="/register">Register</a>
             </li>
           {{/if}}
-          {{/if}}
         </ul>
+        {{/unless}}
       </div>
     </div>
   </nav>

@@ -150,8 +150,12 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/login');
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Error during logout:', err);
+      return res.render('pages/logout', { layout: 'main', is_logout: true }); 
+    }
+    res.render('pages/logout', { layout: 'main', is_logout: true }); 
   });
 });
 
