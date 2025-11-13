@@ -1,0 +1,80 @@
+
+.navbar {
+    background-color: black;
+}
+
+.navbar a {
+  color: white;
+}
+
+.navbar a:hover {
+    color: #FFD447;
+}
+
+.register-link {
+    color: #FFD447;
+}
+
+.register-link:hover {
+    color: #E5B73A;
+}
+
+.login-link {
+    color: #FFD447;
+}
+
+.login-link:hover {
+    color: #E5B73A;
+}
+
+.btn-primary {
+    background-color: #FFD447;
+    color: #ef750b;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #b01e1e;
+}
+
+.btn-secondary {
+    background-color: #FFD447;
+    color: #ef750b;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #b01e1e;
+}
+
+body {
+  background-color: #054aa4;
+}
+
+.card {
+    background-color: #f2a81f;
+    color: white;
+}
+
+.card-title {
+    color: #b01e1e;
+}
+
+.modal-body {
+    background-color: #ef8c0b;
+}
+
+.modal-footer {
+    background-color: #ef8c0b;
+    border: none;
+}
+
+.modal-header {
+    background-color: #ef8c0b;
+    border: none;
+}
+
+.modal-body .form-control {
+    background-color: #e0be91;
+    border: none;
+}
