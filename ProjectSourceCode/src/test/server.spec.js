@@ -20,8 +20,7 @@ describe('Test for GET /welcome:', () => {
       .get('/welcome')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.body.status).to.equals('success');
-        assert.strictEqual(res.body.message, 'Welcome!');
+        expect(res.text).to.include('Welcome to QuiC!');
         done();
       });
   });
