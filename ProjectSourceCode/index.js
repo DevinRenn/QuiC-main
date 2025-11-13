@@ -77,6 +77,10 @@ app.get('/', (req, res) => {
   res.redirect('/welcome');
 });
 
+app.get('/welcome', (req, res) => {
+  res.render('pages/welcome');
+});
+
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -139,33 +143,40 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get('/profile', async (req, res) => {
-  // Get the current user ID from session/auth
-  const userId = req.session.user.user_id;
+// Authentication Middleware.
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
 
-  console.log('Session user_id:', userId);
+// Authentication Required
+app.use(auth);
+
+app.get('/profile', async (req, res) => {
+  const userId = req.session.user.user_id;
 
   const user_query = 'SELECT name, username FROM users WHERE user_id = $1';
 
-  try {    
-    // Query the database for user info
+  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
+                          FROM users_to_folders utf
+                          JOIN folders f ON utf.folder_id = f.folder_id
+                          WHERE utf.user_id = $1;`;
+
+  try {
     const user = await db.oneOrNone(user_query, [userId]);
 
-    console.log('Query result:', user);
-
-  const userData = {
-    user: {
-      name: user.name,
-      username: user.username
-    }};
-
-    // Render the profile page with user data
+    const userData = {
+      user: {
+        name: user.name,
+        username: user.username
+      }};
     res.render('pages/profile', userData);
-  }
-
-  catch (error) {
+  } catch (error) {
     console.error('Error fetching profile data:', error);
-    res.status(500).send('Error loading profile');
+    res.render('pages/login');
   }
 });
 
@@ -185,15 +196,18 @@ app.get('/logout', (req, res) => {
   });
 });
 
-app.get('/welcome', (req, res) => {
-  res.render('pages/welcome');
-});
-
-
 // Fetch all folders
 app.get('/folders', async (req, res) => {
+  const userId = req.session.user.user_id;
   try {
-    const folders = await db.any('SELECT folder_id, folder_name FROM folders ORDER BY folder_name');
+    const folders = await db.any(
+      `SELECT f.folder_id, f.folder_name
+       FROM folders f
+       JOIN users_to_folders u2f ON f.folder_id = u2f.folder_id
+       WHERE u2f.user_id = $1
+       ORDER BY f.folder_name`,
+      [userId]
+    );
     res.json({ success: true, folders });
   } catch (err) {
     console.error(err);
@@ -201,33 +215,45 @@ app.get('/folders', async (req, res) => {
   }
 });
 
-// Create folder
+
 // Create folder
 app.post('/create_folder', async (req, res) => {
   const { folder_name } = req.body;
+  const userId = req.session.user.user_id;
 
   try {
-    // Check if folder already exists
+    // Check if folder already exists for this user
     const exists = await db.oneOrNone(
-      'SELECT folder_id FROM folders WHERE folder_name = $1',
-      [folder_name]
+      `SELECT f.folder_id
+       FROM folders f
+       JOIN users_to_folders u2f ON f.folder_id = u2f.folder_id
+       WHERE f.folder_name = $1 AND u2f.user_id = $2`,
+      [folder_name, userId]
     );
 
     if (exists) {
-      return res.json({ success: false, message: 'Folder already exists' });
+      return res.json({ success: false, message: 'Folder already exists for this user' });
     }
 
-    const result = await db.one(
+    // Insert folder
+    const folder = await db.one(
       'INSERT INTO folders (folder_name) VALUES ($1) RETURNING folder_id, folder_name',
       [folder_name]
     );
 
-    res.json({ success: true, folder: result });
+    // Associate folder with user
+    await db.none(
+      'INSERT INTO users_to_folders (user_id, folder_id) VALUES ($1, $2)',
+      [userId, folder.folder_id]
+    );
+
+    res.json({ success: true, folder });
   } catch (err) {
     console.error(err);
     res.json({ success: false, message: 'Database error' });
   }
 });
+
 
 
 // Create set in folder
@@ -264,22 +290,27 @@ app.post('/create_set', async (req, res) => {
 
 // Fetch sets for a folder
 app.get('/folders/:folder_id/sets', async (req, res) => {
+  const userId = req.session.user.user_id;
   const { folder_id } = req.params;
+
   try {
     const sets = await db.any(
       `SELECT s.set_id, s.set_name, s.set_description
        FROM sets s
        JOIN folders_to_sets f2s ON s.set_id = f2s.set_id
-       WHERE f2s.folder_id = $1
+       JOIN users_to_folders u2f ON f2s.folder_id = u2f.folder_id
+       WHERE f2s.folder_id = $1 AND u2f.user_id = $2
        ORDER BY s.set_name`,
-      [folder_id]
+      [folder_id, userId]
     );
+
     res.json({ success: true, sets });
   } catch (err) {
     console.error(err);
     res.json({ success: false, sets: [] });
   }
 });
+
 
 
 // Starts Server
