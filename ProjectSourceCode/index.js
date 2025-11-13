@@ -74,7 +74,7 @@ app.use(express.static(path.join(__dirname, 'src/resources')));
 
 // API Routes
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  res.redirect('/welcome');
 });
 
 app.get('/login', (req, res) => {
@@ -160,7 +160,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/welcome', (req, res) => {
-  res.json({ status: 'success', message: 'Welcome!' });
+  res.render('pages/welcome');
 });
 
 // Starts Server
