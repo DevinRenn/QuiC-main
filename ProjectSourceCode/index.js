@@ -169,24 +169,40 @@ app.get('/profile', async (req, res) => {
   }
 });
 
-app.get('/home', (req, res) => {
-  res.render('pages/home', {
-  is_home: true
-  });
+// Return all folders as JSON
+app.get('/folders', async (req, res) => {
+  try {
+    const folders = await db.any('SELECT folder_id, folder_name FROM folders ORDER BY folder_name');
+    res.json({ success: true, folders });
+  } catch (err) {
+    console.error("Error fetching folders:", err);
+    res.json({ success: false, folders: [] });
+  }
 });
 
-app.get('/logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      console.error('Error during logout:', err);
-      return res.render('pages/logout', { layout: 'main', is_logout: true }); 
-    }
-    res.render('pages/logout', { layout: 'main', is_logout: true }); 
-  });
+app.get('/folders/:folderId/sets', async (req, res) => {
+  const folderId = req.params.folderId;
+  try {
+    const sets = await db.any(
+      'SELECT set_id, set_name, set_description FROM sets WHERE folder_id = $1',
+      [folderId]
+    );
+    res.json({ success: true, sets });
+  } catch (err) {
+    console.error("Error fetching sets by folder:", err);
+    res.json({ success: false, sets: [] });
+  }
 });
 
-app.get('/welcome', (req, res) => {
-  res.render('pages/welcome');
+
+
+
+app.post('/create_set', (req, res) => {
+  const { set_name } = req.body;
+  const { set_description } = req.body;
+  console.log('New set:', set_name);
+  console.log('Description:', set_description);
+  res.json({ success: true, set_name});
 });
 
 // Starts Server

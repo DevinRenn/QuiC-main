@@ -103,4 +103,159 @@
 
         </div>
     </div>
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Load folders on page load
+  loadFolders();
+
+  // Handle folder creation
+  document.querySelector('#folder-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const folderNameInput = document.getElementById('folder_name');
+    const folderName = folderNameInput.value.trim();
+    if (!folderName) return;
+
+    try {
+      const response = await fetch('/create_folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_name: folderName })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        addFolderToList(result.folder.folder_name, result.folder.folder_id);
+        folderNameInput.value = '';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('folder-modal'));
+        modal.hide();
+      } else {
+        alert(result.message || "Could not create folder");
+      }
+    } catch (err) {
+      console.error("Error creating folder:", err);
+      alert("Error creating folder. See console for details.");
+    }
+  });
+
+  // Handle set creation
+  document.querySelector('#set-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const setNameInput = document.getElementById('set_name');
+    const setDescriptionInput = document.getElementById('set_description');
+    const setName = setNameInput.value.trim();
+    const setDescription = setDescriptionInput.value.trim();
+    if (!setName) return;
+
+    try {
+      const response = await fetch('/create_set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ set_name: setName, set_description: setDescription })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        addSetToList(result.set_name, setDescription); // temporarily display set
+        setNameInput.value = '';
+        setDescriptionInput.value = '';
+        const modal = bootstrap.Modal.getInstance(document.getElementById('set-modal'));
+        modal.hide();
+      } else {
+        alert(result.message || "Could not create set");
+      }
+    } catch (err) {
+      console.error("Error creating set:", err);
+      alert("Error creating set. See console for details.");
+    }
+  });
+});
+
+// --- FOLDERS FUNCTIONS ---
+async function loadFolders() {
+  try {
+    const response = await fetch('/folders');
+    const result = await response.json();
+
+    if (result.success && Array.isArray(result.folders)) {
+      result.folders.forEach(folder => {
+        addFolderToList(folder.folder_name, folder.folder_id);
+      });
+    }
+  } catch (err) {
+    console.error("Error loading folders:", err);
+  }
+}
+
+function addFolderToList(folderName, folderId) {
+  const folderContainer = document.querySelector('.card-body > .d-flex.flex-column');
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'd-flex justify-content-center align-items-center';
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'btn btn-primary d-flex align-items-center mt-2';
+  button.innerHTML = `
+    <img src="/img/folder.png" alt="Icon" style="width: 24px; height: 16px;" class="me-2">
+    <span>${folderName}</span>
+  `;
+
+  wrapper.appendChild(button);
+  folderContainer.appendChild(wrapper);
+}
+
+// --- SETS FUNCTIONS ---
+function addSetToList(setName, setDescription) {
+  const container = document.getElementById('sets-container');
+
+  const link = document.createElement('a');
+  link.href = '#';
+  link.className = 'text-decoration-none text-bg-light text-dark d-block p-3 border rounded';
+  link.style.marginTop = '5px';
+  link.innerHTML = `
+    <h3>${setName}</h3>
+    <p>${setDescription}</p>
+  `;
+
+  container.appendChild(link);
+}
+
+// Inside your addFolderToList() function, update the button click handler:
+button.addEventListener('click', () => {
+  currentFolderId = folderId;  // folderId from the button dataset
+  document.getElementById('set_folder_id').value = folderId;  // hidden form field
+  clearSetsContainer();
+  loadSetsForFolder(folderId);
+});
+
+// New function to load sets for a folder:
+async function loadSetsForFolder(folderId) {
+  try {
+    const response = await fetch(`/folders/${folderId}/sets`);
+    const result = await response.json();
+
+    if (result.success && Array.isArray(result.sets)) {
+      result.sets.forEach(set => {
+        addSetToList(set.set_name, set.set_description);
+      });
+    } else {
+      console.warn("No sets found or unexpected response", result);
+    }
+  } catch (err) {
+    console.error("Error loading sets for folder:", err);
+  }
+}
+
+function clearSetsContainer() {
+  const container = document.getElementById('sets-container');
+  container.innerHTML = '';
+}
+
+</script>
