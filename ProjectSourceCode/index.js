@@ -121,14 +121,16 @@ app.get('/register', (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  const name = req.body.name;
+
   const username = req.body.username;
 
   const hash = await bcrypt.hash(req.body.password, 10);
 
-  const query = `INSERT INTO users (username, password) VALUES ($1, $2)`;
+  const query = `INSERT INTO users (name, username, password) VALUES ($1, $2, $3)`;
 
   try {
-    await db.none(query, [username, hash]);
+    await db.none(query, [name, username, hash]);
     res.redirect('/login');
   }
 
