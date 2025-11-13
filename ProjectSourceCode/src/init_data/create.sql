@@ -19,9 +19,8 @@ CREATE TABLE IF NOT EXISTS users_to_folders (
 CREATE TABLE IF NOT EXISTS sets (
     set_id SERIAL PRIMARY KEY,
     set_name VARCHAR(100) NOT NULL,
-    set_description VARCHAR(300) NOT NULL
+    set_description VARCHAR(300)
 );
-
 
 CREATE TABLE IF NOT EXISTS folders_to_sets (
     folder_id INT REFERENCES folders(folder_id) ON DELETE CASCADE,
