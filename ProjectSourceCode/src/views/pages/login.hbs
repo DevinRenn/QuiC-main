@@ -1,5 +1,19 @@
 <style>
+.bg-wrapper {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
 
+.bg-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/img/loginorreg.jpg')
+             center/cover no-repeat;
+  transform: scale(1.1);
+  z-index: -1;
+}
 .login-box {
   background: rgba(255, 255, 255, 0.25);
   padding: 30px;
@@ -10,6 +24,7 @@
   backdrop-filter: blur(5px);
 }
 </style>
+<div class="bg-wrapper"> 
   <div class="login-box">
 
     <h2 style="text-align: center;">Login</h2>
@@ -40,4 +55,5 @@
     </p>
 
   </div>
+</div>
 </div>
