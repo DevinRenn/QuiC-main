@@ -170,12 +170,16 @@ app.get('/profile', async (req, res) => {
 
   try {
     const user = await db.oneOrNone(user_query, [userId]);
+    const folders = await db.oneOrNone(folders_query, [userId]);
 
     const userData = {
       user: {
         first_name: user.first_name,
         last_name: user.last_name,
         username: user.username
+      },
+      folders: {
+        count: folders.folder_count
       }
     };
     res.render('pages/profile', userData);
