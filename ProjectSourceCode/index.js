@@ -125,16 +125,17 @@ app.get('/register', (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const name = req.body.name;
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
 
   const username = req.body.username;
 
   const hash = await bcrypt.hash(req.body.password, 10);
 
-  const query = `INSERT INTO users (name, username, password) VALUES ($1, $2, $3)`;
+  const query = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`;
 
   try {
-    await db.none(query, [name, username, hash]);
+    await db.none(query, [first_name, last_name, username, hash]);
     res.redirect('/login');
   }
 
@@ -160,7 +161,7 @@ ALL ROUTES BENEATH THIS POINT CAN ONLY BE ACCESSED BY LOGGED IN USERS
 app.get('/profile', async (req, res) => {
   const userId = req.session.user.user_id;
 
-  const user_query = 'SELECT name, username FROM users WHERE user_id = $1';
+  const user_query = 'SELECT first_name, last_name, username FROM users WHERE user_id = $1';
 
   const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
                           FROM users_to_folders utf
@@ -172,7 +173,8 @@ app.get('/profile', async (req, res) => {
 
     const userData = {
       user: {
-        name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         username: user.username
       }
     };
