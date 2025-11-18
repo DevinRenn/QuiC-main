@@ -163,12 +163,12 @@ app.get('/profile', async (req, res) => {
 
   const user_query = 'SELECT first_name, last_name, username FROM users WHERE user_id = $1';
 
-  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count, f.folder_name
+  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
                           FROM users_to_folders utf
                           JOIN folders f ON utf.folder_id = f.folder_id
                           WHERE utf.user_id = $1;`;
 
-  const sets_query = `SELECT COUNT(s.set_id) AS set_count, s.set_name, s.set_description
+  const sets_query = `SELECT COUNT(s.set_id) AS set_count
                         FROM folders_to_sets fts
                         JOIN sets s ON fts.set_id = s.set_id
                         JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
@@ -194,13 +194,10 @@ app.get('/profile', async (req, res) => {
         username: user.username
       },
       folders: {
-        folders_count: folders.folder_count,
-        folder_name: folders.folder_name
+        folders_count: folders.folder_count
       },
       sets: {
-        sets_count: sets.set_count,
-        set_name: sets.set_name,
-        set_description: sets.set_description
+        sets_count: sets.set_count
       },
       cards: {
         cards_count: cards.card_cound
