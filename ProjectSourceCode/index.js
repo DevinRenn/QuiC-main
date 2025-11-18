@@ -168,9 +168,24 @@ app.get('/profile', async (req, res) => {
                           JOIN folders f ON utf.folder_id = f.folder_id
                           WHERE utf.user_id = $1;`;
 
+  const sets_query = `SELECT COUNT(s.set_id) AS set_count
+                        FROM folders_to_sets fts
+                        JOIN sets s ON fts.set_id = s.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
+  const cards_query = `SELECT COUNT(c.card_id) AS card_cound
+                        FROM sets_to_cards stc
+                        JOIN cards c ON stc.card_id = c.card_id
+                        JOIN folders_to_sets fts ON stc.set_id = fts.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
   try {
     const user = await db.oneOrNone(user_query, [userId]);
     const folders = await db.oneOrNone(folders_query, [userId]);
+    const sets = await db.oneOrNone(sets_query, [userId]);
+    const cards = await db.oneOrNone(cards_query, [userId]);
 
     const userData = {
       user: {
@@ -179,7 +194,13 @@ app.get('/profile', async (req, res) => {
         username: user.username
       },
       folders: {
-        count: folders.folder_count
+        folders_count: folders.folder_count
+      },
+      sets: {
+        sets_count: sets.set_count
+      },
+      cards: {
+        cards_count: cards.card_cound
       }
     };
     res.render('pages/profile', userData);
