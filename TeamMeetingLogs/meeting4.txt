@@ -1,0 +1,20 @@
+Date: 11/17/2025
+Meeting with group on ZOOM
+Minutes: 15
+Time: 6:00-15 PM
+
+Fourth Meeting:
+Max and Zach discussed on working on the sets page, it was needed on the profile page
+Roberto made the font styling of the entire website to look like a comic, added a unique look for login/register/logout
+Devin made redirects to pages and blockages when not logged in (redirect to home)
+Leydi did the universal styling look for all pages
+Helped Ronan with logout page
+GitHub board updated
+Release notes review
+Will style other pages soon
+
+Takeaways:
+
+Almost done, try finishing it before thanksgiving break
+Finish profile page, sets, welcome page, and other things that need to get done from our GitHub board
+Everyone did their weekly commit goal
