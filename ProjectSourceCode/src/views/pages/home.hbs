@@ -11,7 +11,8 @@
           </div>
 
           <div class="d-flex justify-content-center align-items-center mt-3">
-            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#folder-modal">Add Folder</button>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#folder-modal">Add
+              Folder</button>
           </div>
         </div>
       </div>
@@ -19,11 +20,12 @@
 
     <!-- 3/4 width card for sets -->
     <div class="col-md-9">
-      <div class="card">
+      <div class="card" id="sets-card" style="display: none">
         <div class="card-body text-bg-primary">
           <div class="d-flex justify-content-between align-items-center">
             <h1 id="sets-title">Sets</h1>
-            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#set-modal">Create Set</button>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#set-modal">Create
+              Set</button>
           </div>
 
           <!-- Where dynamically added sets will appear -->
@@ -84,110 +86,118 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  let selectedFolderId = null;
+  document.addEventListener('DOMContentLoaded', () => {
+    let selectedFolderId = null;
 
-  async function loadFolders() {
-    try {
-      const response = await fetch('/folders');
-      const result = await response.json();
-      if (!result.success) return;
+    async function loadFolders() {
+      try {
+        const response = await fetch('/folders');
+        const result = await response.json();
+        if (!result.success) return;
 
-      const container = document.getElementById('folders-container');
-      container.innerHTML = '';
-      result.folders.forEach(folder => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'd-flex justify-content-center align-items-center';
+        const container = document.getElementById('folders-container');
+        container.innerHTML = '';
+        result.folders.forEach(folder => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'd-flex justify-content-center align-items-center';
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-primary d-flex align-items-center mt-2';
-        button.textContent = folder.folder_name;
-        button.onclick = () => selectFolder(folder.folder_id, folder.folder_name);
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'btn btn-primary d-flex align-items-center mt-2';
+          button.textContent = folder.folder_name;
+          button.onclick = () => selectFolder(folder.folder_id, folder.folder_name);
 
-        wrapper.appendChild(button);
-        container.appendChild(wrapper);
-      });
-    } catch (err) {
-      console.error("Error loading folders:", err);
+          wrapper.appendChild(button);
+          container.appendChild(wrapper);
+        });
+      } catch (err) {
+        console.error("Error loading folders:", err);
+      }
     }
-  }
 
-  async function selectFolder(folderId, folderName) {
-    selectedFolderId = folderId;
-    document.getElementById('sets-title').textContent = `Sets in "${folderName}"`;
-    document.getElementById('set_folder_id').value = folderId;
-    loadSets(folderId);
-  }
-
-  async function loadSets(folderId) {
-    try {
-      const response = await fetch(`/folders/${folderId}/sets`);
-      const result = await response.json();
-      const container = document.getElementById('sets-container');
-      container.innerHTML = '';
-      if (!result.success) return;
-
-      result.sets.forEach(set => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'text-decoration-none text-bg-light text-dark d-block p-3 border rounded mb-2';
-        wrapper.innerHTML = `<h3>${set.set_name}</h3><p>${set.set_description || ''}</p>`;
-        container.appendChild(wrapper);
-      });
-    } catch (err) {
-      console.error("Error loading sets:", err);
+    async function selectFolder(folderId, folderName) {
+      selectedFolderId = folderId;
+      document.getElementById('sets-title').textContent = `Sets in "${folderName}"`;
+      document.getElementById('set_folder_id').value = folderId;
+      loadSets(folderId);
     }
-  }
 
-  document.querySelector('#folder-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const folderName = document.getElementById('folder_name').value.trim();
-    if (!folderName) return;
+    async function loadSets(folderId) {
+      try {
+        const response = await fetch(`/folders/${folderId}/sets`);
+        const result = await response.json();
+        const container = document.getElementById('sets-container');
+        container.innerHTML = '';
+        if (result.success) {
+          console.log("Setting display from " + document.getElementById('sets-card').style.display + " to block");
+          document.getElementById('sets-card').style.display = 'block';
+        }
+        else {
+          console.log("Setting display from " + document.getElementById('sets-card').style.display + " to none");
+          document.getElementById('sets-card').style.display = 'none';
+          return;
+        }
 
-    try {
-      const response = await fetch('/create_folder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ folder_name: folderName })
-      });
-      const result = await response.json();
-      if (result.success) {
-        loadFolders();
-        document.getElementById('folder_name').value = '';
-        bootstrap.Modal.getInstance(document.getElementById('folder-modal')).hide();
-      } else alert(result.message || "Could not create folder");
-    } catch (err) {
-      console.error("Error creating folder:", err);
-      alert("Error creating folder. See console for details.");
+        result.sets.forEach(set => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'text-decoration-none text-bg-light text-dark d-block p-3 border rounded mb-2';
+          wrapper.innerHTML = `<h3>${set.set_name}</h3><p>${set.set_description || ''}</p>`;
+          container.appendChild(wrapper);
+        });
+      } catch (err) {
+        console.error("Error loading sets:", err);
+      }
     }
+
+    document.querySelector('#folder-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const folderName = document.getElementById('folder_name').value.trim();
+      if (!folderName) return;
+
+      try {
+        const response = await fetch('/create_folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folder_name: folderName })
+        });
+        const result = await response.json();
+        if (result.success) {
+          loadFolders();
+          document.getElementById('folder_name').value = '';
+          bootstrap.Modal.getInstance(document.getElementById('folder-modal')).hide();
+        } else alert(result.message || "Could not create folder");
+      } catch (err) {
+        console.error("Error creating folder:", err);
+        alert("Error creating folder. See console for details.");
+      }
+    });
+
+    document.querySelector('#set-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!selectedFolderId) return alert('Select a folder first');
+
+      const setName = document.getElementById('set_name').value.trim();
+      const setDescription = document.getElementById('set_description').value.trim();
+
+      try {
+        const response = await fetch('/create_set', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ set_name: setName, set_description: setDescription, folder_id: selectedFolderId })
+        });
+        const result = await response.json();
+        if (result.success) {
+          loadSets(selectedFolderId);
+          document.getElementById('set_name').value = '';
+          document.getElementById('set_description').value = '';
+          bootstrap.Modal.getInstance(document.getElementById('set-modal')).hide();
+        } else alert(result.message || "Could not create set");
+      } catch (err) {
+        console.error("Error creating set:", err);
+        alert("Error creating set. See console for details.");
+      }
+    });
+
+    loadFolders();
   });
-
-  document.querySelector('#set-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!selectedFolderId) return alert('Select a folder first');
-
-    const setName = document.getElementById('set_name').value.trim();
-    const setDescription = document.getElementById('set_description').value.trim();
-
-    try {
-      const response = await fetch('/create_set', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ set_name: setName, set_description: setDescription, folder_id: selectedFolderId })
-      });
-      const result = await response.json();
-      if (result.success) {
-        loadSets(selectedFolderId);
-        document.getElementById('set_name').value = '';
-        document.getElementById('set_description').value = '';
-        bootstrap.Modal.getInstance(document.getElementById('set-modal')).hide();
-      } else alert(result.message || "Could not create set");
-    } catch (err) {
-      console.error("Error creating set:", err);
-      alert("Error creating set. See console for details.");
-    }
-  });
-
-  loadFolders();
-});
 </script>
