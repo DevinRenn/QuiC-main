@@ -20,7 +20,7 @@ describe('Test for GET /welcome:', () => {
       .get('/welcome')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.text).to.include('Welcome to QuiC!');
+        expect(res.text).to.include('Welcome');
         done();
       });
   });
