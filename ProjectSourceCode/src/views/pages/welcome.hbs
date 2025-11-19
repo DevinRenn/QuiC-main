@@ -1,8 +1,48 @@
-<div>
-    <h1 style="text-align: center;">Welcome to QuiC!</h1>
-    <p style="text-align: center;">Start studying QuiC by logging in or registering for a new account.</p>
+<style>
+  .bg-wrapper {
+  position: relative;
+  min-height: 82vh;
+  overflow: hidden;
+}
+
+.bg-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+     background: url('/img/12412631-cd16-4066-9f52-4e6a4933ba5b.png') 
+     center/cover no-repeat;
+  transform: scale(1.1);
+  z-index: -1;
+  background-position: center -230px;
+}
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background-color: #366A76;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center -155px;
+    color: white;
+  }
+</style>
+<div class="header-row">
+  <div>
+    <h1 style="font-size: 53px; margin: 0; display:flex; align-items:center; gap:10px;">Welcome to <img src="/img/logo2.jpg" alt="QuiC Logo" style="height:70px;"> uiC!
+    </h1>
+    <p style="font-size: 20px; margin: 0;">
+      The ultimate quizlet alternative to create, study, and share flashcards with ease.
+    </p>
+  </div>
+  <div>
+    <a href="/login" class="btn btn-primary me-3" style="font-size: 24px;">Login</a>
+    <a href="/register" class="btn btn-secondary" style="font-size: 24px;">Register</a>
+  </div>
 </div>
-<p style="text-align: center;">
-  <a href="/login" class="btn btn-primary me-3">Login</a>
-  <a href="/register" class="btn btn-secondary">Register</a>
-</p>
+<div class="bg-wrapper">
+  <p></p>
+
+</div>
