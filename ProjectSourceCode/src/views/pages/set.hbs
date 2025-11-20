@@ -1,4 +1,21 @@
-<div class="d-flex justify-content-center gap-2" style="margin-top:3%;">
+<style>
+    .bg-wrapper {
+  position: relative;
+  min-height: 100vh;
+}
+
+.bg-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/img/notebook.png')
+             center/cover no-repeat;
+  transform: scale(1);
+  z-index: -1;
+}
+</style>
+<div class="bg-wrapper">
+<div class="d-flex justify-content-center gap-2 container" style="margin-top:3%;">
   <button id="editBtn" type="button" class="btn btn-primary">Edit Flashcards</button>
   <button id="studyBtn" type="button" class="btn btn-primary">Study Flashcards</button>
 </div>
@@ -77,6 +94,7 @@
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
+</div>
 </div>
 
 <script>
