@@ -252,6 +252,7 @@ app.get('/home', (req, res) => {
   });
 });
 
+
 app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
@@ -380,6 +381,12 @@ app.get('/folders/:folder_id/sets', async (req, res) => {
 app.get('/set', (req, res) =>{
   res.render('pages/set');
 })
+
+app.get('/sets/:setId', (req, res) => {
+  const setId = req.params.setId;
+
+  res.render('pages/set', { setId });
+});
 
 
 // Starts Server
