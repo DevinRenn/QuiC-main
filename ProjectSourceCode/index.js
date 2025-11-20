@@ -21,7 +21,7 @@ const hbs = handlebars.create({
 
 // database configuration
 const dbConfig = {
-  host: 'db', // the database server
+  host: process.env.HOST, // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -198,7 +198,7 @@ app.get('/profile', async (req, res) => {
                         JOIN sets s ON fts.set_id = s.set_id
                         JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
                         WHERE utf.user_id = $1;`;
-  
+
   // Query to get the front and back text of the user's cards
   const cards_query = `SELECT front_text, back_text
                         FROM sets_to_cards stc
@@ -239,7 +239,7 @@ app.get('/profile', async (req, res) => {
       }
     }
 
-    res.render('pages/profile', {userData, numberData});
+    res.render('pages/profile', { userData, numberData });
   } catch (error) {
     console.error('Error fetching profile data:', error);
     res.render('pages/login');
@@ -378,7 +378,7 @@ app.get('/folders/:folder_id/sets', async (req, res) => {
   }
 });
 
-app.get('/set', (req, res) =>{
+app.get('/set', (req, res) => {
   res.render('pages/set');
 })
 
