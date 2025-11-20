@@ -158,23 +158,49 @@ app.use(auth);
 /*
 ALL ROUTES BENEATH THIS POINT CAN ONLY BE ACCESSED BY LOGGED IN USERS
 */
+
 app.get('/profile', async (req, res) => {
   const userId = req.session.user.user_id;
 
+  // Query to get the user's name and username to display on the profile page
   const user_query = 'SELECT first_name, last_name, username FROM users WHERE user_id = $1';
 
-  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
+  // Query to get the number of user's folders
+  const num_folders_query = `SELECT COUNT(f.folder_id) AS folder_count
                           FROM users_to_folders utf
                           JOIN folders f ON utf.folder_id = f.folder_id
                           WHERE utf.user_id = $1;`;
 
-  const sets_query = `SELECT COUNT(s.set_id) AS set_count
+  // Query to get the number of user's sets
+  const num_sets_query = `SELECT COUNT(s.set_id) AS set_count
                         FROM folders_to_sets fts
                         JOIN sets s ON fts.set_id = s.set_id
                         JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
                         WHERE utf.user_id = $1;`;
 
-  const cards_query = `SELECT COUNT(c.card_id) AS card_cound
+  // Query to get the number of user's cards
+  const num_cards_query = `SELECT COUNT(c.card_id) AS card_count
+                        FROM sets_to_cards stc
+                        JOIN cards c ON stc.card_id = c.card_id
+                        JOIN folders_to_sets fts ON stc.set_id = fts.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
+  // Query to get the names of the user's folders
+  const folders_query = `SELECT folder_name
+                          FROM folders f
+                          JOIN users_to_folders utf ON f.folder_id = utf.folder_id
+                          WHERE utf.user_id = $1;`;
+
+  // Query to get the names and descriptions of the user's sets
+  const sets_query = `SELECT set_name, set_description
+                        FROM folders_to_sets fts
+                        JOIN sets s ON fts.set_id = s.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+  
+  // Query to get the front and back text of the user's cards
+  const cards_query = `SELECT front_text, back_text
                         FROM sets_to_cards stc
                         JOIN cards c ON stc.card_id = c.card_id
                         JOIN folders_to_sets fts ON stc.set_id = fts.set_id
@@ -183,9 +209,12 @@ app.get('/profile', async (req, res) => {
 
   try {
     const user = await db.oneOrNone(user_query, [userId]);
-    const folders = await db.oneOrNone(folders_query, [userId]);
-    const sets = await db.oneOrNone(sets_query, [userId]);
-    const cards = await db.oneOrNone(cards_query, [userId]);
+    const num_folders = await db.oneOrNone(num_folders_query, [userId]);
+    const num_sets = await db.oneOrNone(num_sets_query, [userId]);
+    const num_cards = await db.oneOrNone(num_cards_query, [userId]);
+    const folders = await db.any(folders_query, [userId]);
+    const sets = await db.any(sets_query, [userId]);
+    const cards = await db.any(cards_query, [userId]);
 
     const userData = {
       user: {
@@ -193,17 +222,24 @@ app.get('/profile', async (req, res) => {
         last_name: user.last_name,
         username: user.username
       },
-      folders: {
-        folders_count: folders.folder_count
-      },
-      sets: {
-        sets_count: sets.set_count
-      },
-      cards: {
-        cards_count: cards.card_cound
-      }
+      folders: folders,
+      sets: sets,
+      cards: cards
     };
-    res.render('pages/profile', userData);
+
+    const numberData = {
+      num_folders: {
+        folders_count: num_folders.folder_count
+      },
+      num_sets: {
+        sets_count: num_sets.set_count
+      },
+      num_cards: {
+        cards_count: num_cards.card_count
+      }
+    }
+
+    res.render('pages/profile', {userData, numberData});
   } catch (error) {
     console.error('Error fetching profile data:', error);
     res.render('pages/login');
