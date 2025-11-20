@@ -125,16 +125,17 @@ app.get('/register', (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const name = req.body.name;
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
 
   const username = req.body.username;
 
   const hash = await bcrypt.hash(req.body.password, 10);
 
-  const query = `INSERT INTO users (name, username, password) VALUES ($1, $2, $3)`;
+  const query = `INSERT INTO users (first_name, last_name, username, password) VALUES ($1, $2, $3, $4)`;
 
   try {
-    await db.none(query, [name, username, hash]);
+    await db.none(query, [first_name, last_name, username, hash]);
     res.redirect('/login');
   }
 
@@ -146,34 +147,99 @@ app.post("/register", async (req, res) => {
 // Authentication Middleware.
 const auth = (req, res, next) => {
   if (!req.session.user) {
-    // Default to login page.
-    return res.redirect('/login');
+    // Default to welcome page.
+    return res.redirect('/welcome');
   }
   next();
 };
 
 // Authentication Required
 app.use(auth);
+/*
+ALL ROUTES BENEATH THIS POINT CAN ONLY BE ACCESSED BY LOGGED IN USERS
+*/
 
 app.get('/profile', async (req, res) => {
   const userId = req.session.user.user_id;
 
-  const user_query = 'SELECT name, username FROM users WHERE user_id = $1';
+  // Query to get the user's name and username to display on the profile page
+  const user_query = 'SELECT first_name, last_name, username FROM users WHERE user_id = $1';
 
-  const folders_query = `SELECT COUNT(f.folder_id) AS folder_count
+  // Query to get the number of user's folders
+  const num_folders_query = `SELECT COUNT(f.folder_id) AS folder_count
                           FROM users_to_folders utf
                           JOIN folders f ON utf.folder_id = f.folder_id
                           WHERE utf.user_id = $1;`;
 
+  // Query to get the number of user's sets
+  const num_sets_query = `SELECT COUNT(s.set_id) AS set_count
+                        FROM folders_to_sets fts
+                        JOIN sets s ON fts.set_id = s.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
+  // Query to get the number of user's cards
+  const num_cards_query = `SELECT COUNT(c.card_id) AS card_count
+                        FROM sets_to_cards stc
+                        JOIN cards c ON stc.card_id = c.card_id
+                        JOIN folders_to_sets fts ON stc.set_id = fts.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
+  // Query to get the names of the user's folders
+  const folders_query = `SELECT folder_name
+                          FROM folders f
+                          JOIN users_to_folders utf ON f.folder_id = utf.folder_id
+                          WHERE utf.user_id = $1;`;
+
+  // Query to get the names and descriptions of the user's sets
+  const sets_query = `SELECT set_name, set_description
+                        FROM folders_to_sets fts
+                        JOIN sets s ON fts.set_id = s.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+  
+  // Query to get the front and back text of the user's cards
+  const cards_query = `SELECT front_text, back_text
+                        FROM sets_to_cards stc
+                        JOIN cards c ON stc.card_id = c.card_id
+                        JOIN folders_to_sets fts ON stc.set_id = fts.set_id
+                        JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
+                        WHERE utf.user_id = $1;`;
+
   try {
     const user = await db.oneOrNone(user_query, [userId]);
+    const num_folders = await db.oneOrNone(num_folders_query, [userId]);
+    const num_sets = await db.oneOrNone(num_sets_query, [userId]);
+    const num_cards = await db.oneOrNone(num_cards_query, [userId]);
+    const folders = await db.any(folders_query, [userId]);
+    const sets = await db.any(sets_query, [userId]);
+    const cards = await db.any(cards_query, [userId]);
 
     const userData = {
       user: {
-        name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         username: user.username
-      }};
-    res.render('pages/profile', userData);
+      },
+      folders: folders,
+      sets: sets,
+      cards: cards
+    };
+
+    const numberData = {
+      num_folders: {
+        folders_count: num_folders.folder_count
+      },
+      num_sets: {
+        sets_count: num_sets.set_count
+      },
+      num_cards: {
+        cards_count: num_cards.card_count
+      }
+    }
+
+    res.render('pages/profile', {userData, numberData});
   } catch (error) {
     console.error('Error fetching profile data:', error);
     res.render('pages/login');
@@ -182,7 +248,7 @@ app.get('/profile', async (req, res) => {
 
 app.get('/home', (req, res) => {
   res.render('pages/home', {
-  is_home: true
+    is_home: true
   });
 });
 
@@ -190,9 +256,9 @@ app.get('/logout', (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error('Error during logout:', err);
-      return res.render('pages/logout', { layout: 'main', is_logout: true }); 
+      return res.render('pages/logout', { layout: 'main', is_logout: true });
     }
-    res.render('pages/logout', { layout: 'main', is_logout: true }); 
+    res.render('pages/logout', { layout: 'main', is_logout: true });
   });
 });
 

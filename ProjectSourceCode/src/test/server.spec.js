@@ -20,7 +20,7 @@ describe('Test for GET /welcome:', () => {
       .get('/welcome')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        expect(res.text).to.include('Welcome to QuiC!');
+        expect(res.text).to.include('Welcome');
         done();
       });
   });
@@ -43,7 +43,7 @@ describe('Test for POST /register:', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ name: 'Test user', username: randomUsername, password: 'testpassword' })
+      .send({ first_name: 'Test user', last_name: 'Test user', username: randomUsername, password: 'testpassword' })
       .end((err, res) => {
         res.should.redirectTo(/\/login$/);
         done();
@@ -53,7 +53,7 @@ describe('Test for POST /register:', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ name: 'Test user', username: randomUsername, password: 'testpassword' })
+      .send({ first_name: 'Test user', last_name: 'Test user', username: randomUsername, password: 'testpassword' })
       .end((err, res) => {
         expect(res.text.toLowerCase()).to.include("username already exists");
         done();

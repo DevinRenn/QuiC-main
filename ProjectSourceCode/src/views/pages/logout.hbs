@@ -1,2 +1,35 @@
-<h2 style="color: green; text-align: center;">Logged Out Successfully!</h2>
-<h3 style="text-align: center;">You have been logged out. Thank you for using QuiC! You can login again <a href="/login">here</a>, or access the home page at the top</a>.</h3>
+<style>
+    .bg-wrapper {
+  position: relative;
+  min-height: 72vh;
+  overflow: hidden;
+}
+
+.bg-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url('/img/dark.jpg')
+             center/cover no-repeat;
+  transform: scale(1.1);
+  z-index: -1;
+}
+  .logout-box {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 30px;
+    width: 350px;
+    margin: auto;
+    margin-top: 80px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    text-align: center;
+  }
+</style>
+<div class="bg-wrapper">
+<div class="logout-box">
+  <h2 style="color: #FFD447;">Logged Out Successfully!</h2>
+  <h3>
+    You have been logged out. Thank you for using QuiC!  
+    You can login again <a href="/login">here</a>, or access the welcome page at the top.
+  </h3>
+</div>

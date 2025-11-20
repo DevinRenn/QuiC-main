@@ -1,3 +1,5 @@
+/*Importing comic book font*/
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap');
 
 .navbar {
     background-color: black;
@@ -49,6 +51,10 @@
 
 body {
   background-color: #054aa4;
+  font-family: 'Fredoka', cursive;  
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: black 1px 1px 2px;
 }
 
 .card {

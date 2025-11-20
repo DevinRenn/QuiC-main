@@ -1,8 +1,35 @@
 <div class="card text-center">
   <div class="card-body">
-    <h1 class="card-title">{{user.name}}</h1>
-    <p class="card-text">@{{user.username}}</p>
+    <h1 class="card-title">{{userData.user.first_name}} {{userData.user.last_name}}</h1>
+    <p class="card-text">@{{userData.user.username}}</p>
+    <div class="row">
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        <img src="/img/folder.svg" alt="Folders" style="width: 50px; height: 50px; margin-right: 15px;">
+        <p class="mb-0">{{numberData.num_folders.folders_count}}<br>Total folders</p>
+      </div>
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        <img src="/img/book-open-text.svg" alt="Sets" style="width: 50px; height: 50px; margin-right: 15px;">
+        <p class="mb-0">{{numberData.num_sets.sets_count}}<br>Total sets</p>
+      </div>
+      <div class="col-md-4 d-flex align-items-center justify-content-center">
+        <img src="/img/cards.svg" alt="Cards" style="width: 50px; height: 50px; margin-right: 15px;">
+        <p class="mb-0">{{numberData.num_cards.cards_count}}<br>Total cards</p>
+      </div>
+    </div>
   </div>
 </div>
-
-<p>{{folder.folder_count}}</p>
+<div class="container">
+  <h2>My Folders</h2>
+  
+  <div class="row">
+    {{#each userData.folders}}
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">{{this.folder_name}}</h5>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
