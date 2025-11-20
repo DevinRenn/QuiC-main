@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       result.sets.forEach(set => {
         const wrapper = document.createElement('div');
         wrapper.className = 'text-decoration-none text-bg-light text-dark d-block p-3 border rounded mb-2';
-        wrapper.innerHTML = `<h3>${set.set_name}</h3><p>${set.set_description || ''}</p>`;
+        wrapper.innerHTML = `<a href="set" style="text-decoration: none;"><h3>${set.set_name}</h3><p>${set.set_description || ''}</p></a>`;
         container.appendChild(wrapper);
       });
     } catch (err) {

@@ -311,6 +311,9 @@ app.get('/folders/:folder_id/sets', async (req, res) => {
   }
 });
 
+app.get('/set', (req, res) =>{
+  res.render('pages/set');
+})
 
 
 // Starts Server
