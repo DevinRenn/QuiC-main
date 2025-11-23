@@ -13,6 +13,8 @@
   transform: scale(1);
   z-index: 0;
 }
+
+
 </style>
 <div class="bg-wrapper">
   <div class="container" style="margin-top:5%;">
@@ -159,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       result.sets.forEach(set => {
         const wrapper = document.createElement('div');
-        wrapper.className = 'text-decoration-none text-bg-light text-dark d-block p-3 border rounded mb-2';
+        wrapper.className = 'set-card text-decoration-none text-dark d-block p-3 border rounded mb-2';
         
         // LINK to navigate to set.hbs page
         wrapper.innerHTML = `

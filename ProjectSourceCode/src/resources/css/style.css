@@ -9,6 +9,26 @@
   color: white;
 }
 
+.set-card {
+  background-color: #ffff; 
+  transition: background-color 0.2s ease, 
+              box-shadow 0.2s ease, 
+              transform 0.2s ease;
+}
+
+.set-card:hover {
+  background-color: #FFD447;     
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+
+.set-card a {
+  display: block;
+  color: in
+  herit;
+}
+
 .navbar a:hover {
     color: #FFD447;
 }
