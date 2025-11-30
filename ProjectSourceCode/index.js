@@ -187,13 +187,13 @@ app.get('/profile', async (req, res) => {
                         WHERE utf.user_id = $1;`;
 
   // Query to get the names of the user's folders
-  const folders_query = `SELECT folder_name
+  const folders_query = `SELECT f.folder_id, f.folder_name
                           FROM folders f
                           JOIN users_to_folders utf ON f.folder_id = utf.folder_id
                           WHERE utf.user_id = $1;`;
 
   // Query to get the names and descriptions of the user's sets
-  const sets_query = `SELECT set_name, set_description
+  const sets_query = `SELECT fts.folder_id, s.set_name, s.set_description
                         FROM folders_to_sets fts
                         JOIN sets s ON fts.set_id = s.set_id
                         JOIN users_to_folders utf ON fts.folder_id = utf.folder_id
@@ -216,13 +216,18 @@ app.get('/profile', async (req, res) => {
     const sets = await db.any(sets_query, [userId]);
     const cards = await db.any(cards_query, [userId]);
 
+    const foldersWithSets = folders.map(folder => ({
+    ...folder,
+    sets: sets.filter(set => set.folder_id === folder.folder_id)
+    }));
+
     const userData = {
       user: {
         first_name: user.first_name,
         last_name: user.last_name,
         username: user.username
       },
-      folders: folders,
+      folders: foldersWithSets,
       sets: sets,
       cards: cards
     };
