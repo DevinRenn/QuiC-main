@@ -1,0 +1,141 @@
+***********************************
+Feature 1: User Login
+***********************************
+Description: 
+  The login feature allows registered users to sign in using their username and password.
+
+Test Scenarios:
+  Scenario 1: Successful Login
+    Description:
+      A valid user should be able to log in using the correct username and password combination.
+    Test Data:
+      Username: user1
+      Password: user1
+      Database: user1 must already exist in the database
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      User is redirected to home page (https://quic-service.onrender.com/home) and is authenticated
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+  Scenario 2: Login Fails with Incorrect Password
+    Description:
+      The user enters a correct username but incorrect password.
+    Test Data:
+      Username: user1
+      Password: woibhiohoawev
+      Database: user1 must already exist in the database with different password
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      Login attempt fails, user is given an error message saying "incorrect email or password", and user stays on login page.
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+
+
+***********************************
+Feature 2: User Registration
+***********************************
+Description: 
+  The registration feature allows users to create an account and choose a username and password for their new account.
+
+Test Scenarios:
+  Scenario 1: Valid Registration
+    Description:
+      All required fields are filled and the username is not already in use by another user.
+    Test Data:
+      First Name: [Anything]
+      Last Name: [Anything]
+      Username: newuser
+      Password: [Anything]
+      Database: newuser must not already exist in the database
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      User is redirected to login page and inputted user info is added to database (https://quic-service.onrender.com/home)
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+  Scenario 2: Not all Required Fields Are Filled
+    Description:
+      The user has not entered anything for the any of the following fields: First Name, Last Name, Username, Password.
+    Test Data:
+      First Name:
+      Last Name:
+      Username: 
+      Password:
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      User is prompted to fill in the required fields.
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+  Scenario 3: Username Already Exists
+    Description:
+      The user fills all fields but the username they chose has already been taken by another user.
+    Test Data:
+      First Name: [Anything]
+      Last Name: [Anything]
+      Username: user1
+      Password: [Anything]
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      User is given an error saying "Username already exists" and sent back to register page.
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+
+
+***********************************
+Feature 3: User Adds a Flashcard to Set
+***********************************
+Description: 
+  This feature allows the user to create a new flashcard with a custom front/back and add it to the already selected set.
+
+Test Scenarios:
+  Scenario 1: Successfully Added Flashcard
+    Description:
+      The user gives an input for the front and back of the flashcard.
+    Test Data:
+      Front: [Anything]
+      Back: [Anything]
+      User must be logged in and has already selected the set that the flashcard will go in.
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      The flashcard should be visible in the set and be added to the database.
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
+  Scenario 2: Not all Required Fields are Filled
+    Description:
+      The user did not give an input for either the front or the back of the flashcard.
+    Test Data:
+      Front:
+      Back:
+      User must be logged in and has already selected the set that the flashcard will go in.
+    Test Environment:
+      Render cloud service
+      URL: https://quic-service.onrender.com/login
+    Expected Results:
+      User is prompted to fill in the required fields.
+    Information About Testers:
+      The testers will be members of our team which fit the target demographic of college student.
+    Actual Teest Results:
+      N/A
