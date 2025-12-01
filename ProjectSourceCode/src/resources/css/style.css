@@ -64,6 +64,20 @@
   border-color: #b01e1e;
 }
 
+#folders-container .btn:focus,
+#folders-container .btn:active {
+  background-color: #b01e1e;
+  border-color: #b01e1e;
+  box-shadow: none;
+}
+
+#folders-container .btn.active:focus,
+#folders-container .btn.active:active {
+  background-color: #b01e1e;
+  border-color: #b01e1e;
+  box-shadow: none;
+}
+
 .btn-secondary {
     background-color: #FFD447;
     color: #ef750b;
