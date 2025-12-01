@@ -446,18 +446,27 @@ app.get("/sets/:setId/cards", async (req, res) => {
   }
 });
 
-app.delete("/delete_flashcard/:id", async (req, res) => {
-    const cardId = req.params.id;
+app.delete("/cards/:cardId", async (req, res) => {
+  const { cardId } = req.params;
 
-    try {
-        await db.query("DELETE FROM flashcards WHERE id = ?", [cardId]);
+  try {
+    await db.none(
+      `DELETE FROM sets_to_cards WHERE card_id = $1`,
+      [cardId]
+    );
 
-        res.json({ success: true });
-    } catch (err) {
-        res.json({ success: false, message: "DB error" });
-    }
-});
+    await db.none(
+      `DELETE FROM cards WHERE card_id = $1`,
+      [cardId]
+    );
 
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting card:", err);
+    res.json({ success: false, message: "Could not delete card" });
+  }
+}
+);
 
 
 // Starts Server

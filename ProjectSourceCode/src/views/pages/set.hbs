@@ -92,7 +92,7 @@ async function loadExistingCards(setId) {
     const cards = data.cards;
 
     cards.forEach(card => {
-      addCardToList(card.front_text, card.back_text);
+      addCardToList(card.front_text, card.back_text, card.card_id);
     });
 
     buildCarousel(cards);
@@ -102,11 +102,11 @@ async function loadExistingCards(setId) {
   }
 }
 
-function addCardToList(front, back) {
+function addCardToList(front, back, cardId) {
   const flashcardList = document.getElementById("flashcardList");
 
   const newCard = `
-    <div class="card mb-3 flashcard-item">
+    <div class="card mb-3 flashcard-item" data-cardid="${cardId}">
       <div class="row align-items-center">
         <div class="col-md-4 col-12">
           <h5 class="card-title mb-0">${front}</h5>
@@ -115,7 +115,7 @@ function addCardToList(front, back) {
           <p class="card-text mb-0">${back}</p>
         </div>
         <div class="col-md-1 col-12">
-          <button style="background:none; border:none; padding:0;">
+          <button type="button" class="delete-btn" style="background:none; border:none; padding:0;">
             <img src="/img/delete.png" width="100%" height="100%" style="border: 2px solid black; border-radius: 5px; padding: 2px">
           </button>
         </div>
@@ -124,6 +124,23 @@ function addCardToList(front, back) {
   `;
 
   flashcardList.insertAdjacentHTML("beforeend", newCard);
+
+  // Attach delete event
+  const deleteButton = flashcardList.querySelector(`.flashcard-item[data-cardid="${cardId}"] .delete-btn`);
+  deleteButton.addEventListener("click", async () => {
+    try {
+      await fetch(`/cards/${cardId}`, { method: "DELETE" });
+      flashcardList.querySelector(`.flashcard-item[data-cardid="${cardId}"]`).remove();
+
+      // Remove from carousel
+      const carouselInner = document.getElementById("carouselInner");
+      const carouselItem = carouselInner.querySelector(`.carousel-item[data-cardid="${cardId}"]`);
+      if (carouselItem) carouselItem.remove();
+    } catch (err) {
+      console.error("Error deleting card:", err);
+      alert("Could not delete flashcard.");
+    }
+  });
 }
 
 // this updates dynamically
@@ -146,7 +163,7 @@ function buildCarousel(cards) {
 
   cards.forEach((card, idx) => {
     const html = `
-      <div class="carousel-item ${idx === 0 ? "active" : ""}">
+      <div class="carousel-item ${idx === 0 ? "active" : ""}" data-cardid="${card.card_id}">
         <div class="flashcard click-flip mx-auto">
           <div class="flashcard-inner">
             <div class="flashcard-front">${card.front_text}</div>
@@ -158,7 +175,6 @@ function buildCarousel(cards) {
     carouselInner.insertAdjacentHTML("beforeend", html);
   });
 
-  // just helps make sure we read an updated DOM
   setTimeout(() => {
     document.querySelectorAll(".click-flip").forEach(card => {
       card.addEventListener("click", () => {
@@ -175,34 +191,29 @@ document.addEventListener("DOMContentLoaded", () => {
   if (setId) {
     loadExistingCards(setId);
   }
-});
-
-document.addEventListener("DOMContentLoaded", () => {
 
   const studyBtn = document.getElementById("studyBtn");
   const editBtn = document.getElementById("editBtn");
   const carousel = document.getElementById("flashcardCarousel");
   const flashBtn = document.getElementById("createBtn");
   const flashcardList = document.getElementById("flashcardList");
+  const form = document.getElementById("flashcard-form");
+  const flashcardModal = document.getElementById("flashcard-modal");
 
   // Study mode
-studyBtn.addEventListener("click", async () => {
+  studyBtn.addEventListener("click", async () => {
     flashcardList.style.display = "none";
     carousel.style.display = "block";
     flashBtn.style.display = "none";
 
-    // Get setId again
     const setId = document.getElementById("setIdValue").dataset.setid;
-
-    // Re-load cards from server
     const res = await fetch(`/sets/${setId}/cards`);
     const data = await res.json();
 
     if (data.success) {
-        buildCarousel(data.cards);
+      buildCarousel(data.cards);
     }
-});
-
+  });
 
   // Edit mode
   editBtn.addEventListener("click", () => {
@@ -211,9 +222,7 @@ studyBtn.addEventListener("click", async () => {
     flashBtn.style.display = "block";
   });
 
-  const form = document.getElementById("flashcard-form");
-  const flashcardModal = document.getElementById("flashcard-modal");
-
+  // Submit flashcard
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -242,8 +251,27 @@ studyBtn.addEventListener("click", async () => {
         return;
       }
 
-      addCardToList(flashcard_name, flashcard_description);
-      buildCarousel([{ front_text: flashcard_name, back_text: flashcard_description }]);
+      const cardId = result.flashcard.card_id;
+      addCardToList(flashcard_name, flashcard_description, cardId);
+
+      // Append to carousel
+      const carouselInner = document.getElementById("carouselInner");
+      const html = `
+        <div class="carousel-item" data-cardid="${cardId}">
+          <div class="flashcard click-flip mx-auto">
+            <div class="flashcard-inner">
+              <div class="flashcard-front">${flashcard_name}</div>
+              <div class="flashcard-back">${flashcard_description}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      carouselInner.insertAdjacentHTML("beforeend", html);
+
+      // Reattach flip events
+      document.querySelectorAll(".click-flip").forEach(card => {
+        card.addEventListener("click", () => card.classList.toggle("flipped"));
+      });
 
       form.reset();
 
