@@ -193,7 +193,7 @@ app.get('/profile', async (req, res) => {
                           WHERE utf.user_id = $1;`;
 
   // Query to get the names and descriptions of the user's sets
-  const sets_query = `SELECT fts.folder_id, s.set_name, s.set_description
+  const sets_query = `SELECT fts.folder_id, s.set_name, s.set_description, s.set_id
                         FROM folders_to_sets fts
                         JOIN sets s ON fts.set_id = s.set_id
                         JOIN users_to_folders utf ON fts.folder_id = utf.folder_id

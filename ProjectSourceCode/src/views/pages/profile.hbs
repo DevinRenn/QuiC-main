@@ -29,10 +29,10 @@
             <h2 class="card-title text-center">{{folder_name}}</h5>
 
             {{#each sets}}
-              <div class="card mb-2 p-2" style="background-color: #f8f9fa; border: 1px solid #e0e0e0;">
-                <h4 class="text-muted text-center mb-1">{{set_name}}</h6>
-                <p class="text-muted text-center mb-0">{{set_description}}</p>
-              </div>
+              <a class="btn btn-primary w-100 mb-2 text-start" href="/sets/{{set_id}}" role="button">
+                <div class="fw-bold fs-5 text-center text-black">{{set_name}}</div>
+                <div class="text-light text-center text-black">{{set_description}}</div>
+              </a>
             {{/each}}
 
           </div>
