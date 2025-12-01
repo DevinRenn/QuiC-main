@@ -143,6 +143,15 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedFolderId = folderId;
     document.getElementById('sets-title').textContent = `Sets in "${folderName}"`;
     document.getElementById('set_folder_id').value = folderId;
+
+    // Remove highlight from all folder buttons
+    document.querySelectorAll('#folders-container .btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Add highlight to the clicked button
+    event.target.classList.add('active');
+
     loadSets(folderId);
   }
 

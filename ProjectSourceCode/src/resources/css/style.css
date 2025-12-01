@@ -59,6 +59,11 @@
     background-color: #b01e1e;
 }
 
+#folders-container .btn.active {
+  background-color: #b01e1e;
+  border-color: #b01e1e;
+}
+
 .btn-secondary {
     background-color: #FFD447;
     color: #ef750b;
