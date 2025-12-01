@@ -8,13 +8,17 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: url('/img/notebook.png')
-             center/cover no-repeat;
+  background: url('/img/notebook.png') center/cover no-repeat;
   transform: scale(1);
   z-index: -1;
 }
 </style>
+
 <div class="bg-wrapper">
+
+<!-- Allows JS to access setId -->
+<div id="setIdValue" data-setid="{{setId}}"></div>
+
 <div class="d-flex justify-content-center gap-2 container" style="margin-top:3%;">
   <button id="editBtn" type="button" class="btn btn-primary">Edit Flashcards</button>
   <button id="studyBtn" type="button" class="btn btn-primary">Study Flashcards</button>
@@ -35,14 +39,15 @@
       </div>
 
       <div class="modal-body">
-        <form id="flashcard-form">
+        <form id="flashcard-form" action="/create_flashcard" method="POST">
+          <input type="hidden" id="flashcard_set_id" name="set_id" value="{{setId}}">
           <div class="mb-3">
-            <label for="flashcard_name">Flashcard name</label>
+            <label for="flashcard_name">Front text</label>
             <input type="text" class="form-control" id="flashcard_name" name="flashcard_name" required>
           </div>
 
           <div class="mb-3">
-            <label for="flashcard_description">Flashcard description</label>
+            <label for="flashcard_description">Back text</label>
             <textarea class="form-control" id="flashcard_description" name="flashcard_description" maxlength="300" rows="3" placeholder="Enter description (max 300 characters)" required></textarea>
           </div>
         </form>
@@ -56,113 +61,200 @@
   </div>
 </div>
 
-<!-- Container that holds all flashcards -->
-<div id="flashcardList" style="margin-left:20%; margin-right:20%; margin-top:20px;">
+<!-- holds all flashcards in edit mode -->
+<div id="flashcardList" style="margin-left:20%; margin-right:20%; margin-top:20px;"></div>
 
-</div>
-
-<!-- Flashcard carousel -->
+<!-- carousel -->
 <div id="flashcardCarousel" class="carousel slide" data-bs-interval="false" style="display:none;">
-  <div class="carousel-inner">
-
-    <div class="carousel-item active">
-      <div class="flashcard click-flip mx-auto">
-        <div class="flashcard-inner">
-          <div class="flashcard-front">What is the capital of France?</div>
-          <div class="flashcard-back">Paris</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <div class="flashcard click-flip mx-auto">
-        <div class="flashcard-inner">
-          <div class="flashcard-front">What is 2 + 2?</div>
-          <div class="flashcard-back">4</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <div class="carousel-inner" id="carouselInner"></div>
 
   <div class="text-center mt-3 d-flex justify-content-center gap-3">
-    <button class="carousel-bottom-btn" data-bs-target="#flashcardCarousel" data-bs-slide="next">
+    <button class="carousel-bottom-btn" data-bs-target="#flashcardCarousel" data-bs-slide="prev">
       <span class="carousel-control-prev-icon"></span>
     </button>
 
-    <button class="carousel-bottom-btn" data-bs-target="#flashcardCarousel" data-bs-slide="prev">
+    <button class="carousel-bottom-btn" data-bs-target="#flashcardCarousel" data-bs-slide="next">
       <span class="carousel-control-next-icon"></span>
     </button>
   </div>
 </div>
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
 
-    // Flashcard flipping
+<script>
+async function loadExistingCards(setId) {
+  try {
+    const res = await fetch(`/sets/${setId}/cards`);
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    const cards = data.cards;
+
+    cards.forEach(card => {
+      addCardToList(card.front_text, card.back_text);
+    });
+
+    buildCarousel(cards);
+
+  } catch (err) {
+    console.error("Error loading cards:", err);
+  }
+}
+
+function addCardToList(front, back) {
+  const flashcardList = document.getElementById("flashcardList");
+
+  const newCard = `
+    <div class="card mb-3 flashcard-item">
+      <div class="row align-items-center">
+        <div class="col-md-4 col-12">
+          <h5 class="card-title mb-0">${front}</h5>
+        </div>
+        <div class="col-md-7 col-12">
+          <p class="card-text mb-0">${back}</p>
+        </div>
+        <div class="col-md-1 col-12">
+          <button style="background:none; border:none; padding:0;">
+            <img src="/img/delete.png" width="100%" height="100%" style="border: 2px solid black; border-radius: 5px; padding: 2px">
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  flashcardList.insertAdjacentHTML("beforeend", newCard);
+}
+
+// this updates dynamically
+function buildCarousel(cards) {
+  const carouselInner = document.getElementById("carouselInner");
+  carouselInner.innerHTML = "";
+
+  if (!cards.length) {
+    carouselInner.innerHTML = `
+      <div class="carousel-item active">
+        <div class="flashcard mx-auto">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">No flashcards yet.</div>
+            <div class="flashcard-back">Add some in Edit Mode!</div>
+          </div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  cards.forEach((card, idx) => {
+    const html = `
+      <div class="carousel-item ${idx === 0 ? "active" : ""}">
+        <div class="flashcard click-flip mx-auto">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">${card.front_text}</div>
+            <div class="flashcard-back">${card.back_text}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    carouselInner.insertAdjacentHTML("beforeend", html);
+  });
+
+  // just helps make sure we read an updated DOM
+  setTimeout(() => {
     document.querySelectorAll(".click-flip").forEach(card => {
       card.addEventListener("click", () => {
         card.classList.toggle("flipped");
       });
     });
+  }, 50);
+}
 
-    const studyBtn = document.getElementById("studyBtn");
-    const editBtn = document.getElementById("editBtn");
-    const carousel = document.getElementById("flashcardCarousel");
-    const flashBtn = document.getElementById("createBtn");
-    const flashcardList = document.getElementById("flashcardList");
+document.addEventListener("DOMContentLoaded", () => {
+  const setIdElement = document.getElementById("setIdValue");
+  const setId = setIdElement?.dataset.setid;
 
-    // Study mode
-    studyBtn.addEventListener("click", () => {
-      flashcardList.style.display = "none";
-      carousel.style.display = "block";
-      flashBtn.style.display = "none";
-    });
+  if (setId) {
+    loadExistingCards(setId);
+  }
+});
 
-    // Edit mode
-    editBtn.addEventListener("click", () => {
-      carousel.style.display = "none";
-      flashcardList.style.display = "block";
-      flashBtn.style.display = "block";
-    });
+document.addEventListener("DOMContentLoaded", () => {
 
-    // insert new flashcards
-    const form = document.getElementById("flashcard-form");
-    const flashcardModal = document.getElementById("flashcard-modal");
+  const studyBtn = document.getElementById("studyBtn");
+  const editBtn = document.getElementById("editBtn");
+  const carousel = document.getElementById("flashcardCarousel");
+  const flashBtn = document.getElementById("createBtn");
+  const flashcardList = document.getElementById("flashcardList");
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+  // Study mode
+studyBtn.addEventListener("click", async () => {
+    flashcardList.style.display = "none";
+    carousel.style.display = "block";
+    flashBtn.style.display = "none";
 
-      const name = document.getElementById("flashcard_name").value.trim();
-      const desc = document.getElementById("flashcard_description").value.trim();
+    // Get setId again
+    const setId = document.getElementById("setIdValue").dataset.setid;
 
-      if (!name || !desc) return;
+    // Re-load cards from server
+    const res = await fetch(`/sets/${setId}/cards`);
+    const data = await res.json();
 
-      if (desc.length > 300) {
-        alert("Description cannot exceed 300 characters.");
+    if (data.success) {
+        buildCarousel(data.cards);
+    }
+});
+
+
+  // Edit mode
+  editBtn.addEventListener("click", () => {
+    carousel.style.display = "none";
+    flashcardList.style.display = "block";
+    flashBtn.style.display = "block";
+  });
+
+  const form = document.getElementById("flashcard-form");
+  const flashcardModal = document.getElementById("flashcard-modal");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const flashcard_name = document.getElementById("flashcard_name").value.trim();
+    const flashcard_description = document.getElementById("flashcard_description").value.trim();
+    const set_id = document.getElementById("flashcard_set_id").value;
+
+    if (!flashcard_name || !flashcard_description) return;
+
+    if (flashcard_description.length > 300) {
+      alert("Description cannot exceed 300 characters.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/create_flashcard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flashcard_name, flashcard_description, set_id })
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        alert("Error saving flashcard: " + result.message);
         return;
       }
 
-      const newCard = `
-        <div class="card mb-3 flashcard-item">
-          <div class="row align-items-center">
-            <div class="col-md-4 col-12">
-              <h5 class="card-title mb-0">${name}</h5>
-            </div>
-            <div class="col-md-8 col-12">
-              <p class="card-text mb-0">${desc}</p>
-            </div>
-          </div>
-        </div>
-      `;
+      addCardToList(flashcard_name, flashcard_description);
+      buildCarousel([{ front_text: flashcard_name, back_text: flashcard_description }]);
 
-      flashcardList.insertAdjacentHTML("beforeend", newCard);
       form.reset();
 
       const modal = bootstrap.Modal.getInstance(flashcardModal);
       modal.hide();
-    });
 
+    } catch (err) {
+      console.error("Error submitting flashcard:", err);
+      alert("An error occurred while saving the flashcard.");
+    }
   });
+
+});
 </script>

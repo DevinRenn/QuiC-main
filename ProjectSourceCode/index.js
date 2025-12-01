@@ -395,6 +395,71 @@ app.get('/sets/:setId', (req, res) => {
 });
 
 
+app.post("/create_flashcard", async (req, res) => {
+  const { flashcard_name, flashcard_description, set_id} = req.body;
+
+  try {
+    // 1. Insert card
+    const flashcard = await db.one(
+      `INSERT INTO cards (front_text, back_text)
+       VALUES ($1, $2)
+       RETURNING card_id`,
+      [flashcard_name, flashcard_description]
+    );
+
+    
+    // 2. Link to set
+    await db.none(
+      `INSERT INTO sets_to_cards (set_id, card_id)
+       VALUES ($1, $2)`,
+      [set_id, flashcard.card_id]
+    );
+
+    // 3. Send back to frontend
+    //console.log("RESULTS: ", flashcard_name, flashcard_description, set_id);
+    res.json({ success: true, flashcard });
+
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, flashcard: null });
+  }
+});
+
+app.get("/sets/:setId/cards", async (req, res) => {
+  const setId = req.params.setId;
+
+  try {
+    const cards = await db.any(
+      `SELECT c.card_id, c.front_text, c.back_text
+       FROM cards c
+       JOIN sets_to_cards stc ON c.card_id = stc.card_id
+       WHERE stc.set_id = $1
+       ORDER BY c.card_id`,
+      [setId]
+    );
+
+    res.json({ success: true, cards });
+
+  } catch (err) {
+    console.error("Error fetching cards:", err);
+    res.json({ success: false, cards: [] });
+  }
+});
+
+app.delete("/delete_flashcard/:id", async (req, res) => {
+    const cardId = req.params.id;
+
+    try {
+        await db.query("DELETE FROM flashcards WHERE id = ?", [cardId]);
+
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false, message: "DB error" });
+    }
+});
+
+
+
 // Starts Server
 module.exports = app.listen(3000);
 console.log("Server is listening on port 3000");
