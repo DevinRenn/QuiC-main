@@ -21,8 +21,7 @@ const hbs = handlebars.create({
 
 // database configuration
 const dbConfig = {
-  host: 'db',
-  // host: process.env.HOST, // the database server
+  host: process.env.HOST, // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -467,7 +466,52 @@ app.delete("/cards/:cardId", async (req, res) => {
   }
 }
 );
+app.post("/edit_personal_info", async (req, res) => {
+  const { first_name, last_name } = req.body;
+  const userId = req.session.user.user_id;
 
+  try {
+    await db.none(
+      `UPDATE users
+        SET first_name = $1, last_name = $2
+        WHERE user_id = $3;`,
+        [first_name, last_name, userId]
+    );
+
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }  
+});
+
+app.post("/edit_account_info", async (req, res) => {
+  const { username } = req.body;
+  const userId = req.session.user.user_id;
+
+  try {
+    const existingUser = await db.oneOrNone(
+      `SELECT user_id FROM users WHERE username = $1 AND user_id != $2;`,
+      [username, userId]
+    );
+
+    if (existingUser) {
+      return res.json({ success: false, message: 'Username already exists, choose another'});
+    }
+
+    await db.none(
+      `UPDATE users
+        SET username = $1
+        WHERE user_id = $2;`,
+        [username, userId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
 
 // Starts Server
 module.exports = app.listen(3000);

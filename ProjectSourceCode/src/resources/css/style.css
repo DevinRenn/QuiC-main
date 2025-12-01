@@ -211,3 +211,29 @@ body {
     width: 100%;
     flex-wrap: wrap;
 }
+
+#username-error {
+  background-color: red;
+  color: black;
+  margin-top: 15px;
+  margin-bottom: 0;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.nav-pills .nav-link {
+  background-color: #FFD447;
+  color: #ef750b;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #b01e1e;
+  border-color: #b01e1e;
+  box-shadow: none;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: #b01e1e;
+  color: white;
+}

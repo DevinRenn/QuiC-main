@@ -2,6 +2,55 @@
   <div class="card-body">
     <h1 class="card-title">{{userData.user.first_name}} {{userData.user.last_name}}</h1>
     <p class="card-text">@{{userData.user.username}}</p>
+
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-profile-modal" style="position: absolute; top: 40px; right: 150px;">Edit Profile</button>
+
+    <div class="modal" tabindex="-1" id="edit-profile-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header justify-content-center">
+            <h5 class="modal-title">Edit Profile</h5>
+          </div>
+            <div class="modal-body">
+              <ul class="nav nav-pills nav-justified" id="editProfileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal" type="button" role="tab">Personal Info</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab">Account</button>
+                </li>
+              </ul>
+              <div class="tab-content" id="editProfileTabsContent">
+                <div class="tab-pane show active" id="personal" role="tabpanel">
+                  <form id="edit-profile-form" action="/edit_personal_info" method="POST">
+                    <div class="mb-3">
+                      <label for="first_name">First Name</label>
+                      <input type="text" class="form-control" id="first_name" name="first_name">
+                      <label for="last_name">Last Name</label>
+                      <input type="text" class="form-control" id="last_name" name="last_name">
+                    </div>
+                  </form>
+                </div>
+                <div class="tab-pane" id="account" role="tabpanel">
+                  <div class="alert alert-warning" id="username-error" style="display: none;"></div>
+                  <form id="edit-account-form" action="/edit_account_info" method="POST">
+                    <div class="mb-3">
+                      <label for="username">New Username</label>
+                      <input type="text" class="form-control" id="username" name="username">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-secondary" form="edit-profile-form" id="save-personal-btn">Save Changes</button>
+              <button type="submit" class="btn btn-secondary" form="edit-account-form" id="save-account-btn" style="display: none;">Save Changes</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-md-4 d-flex align-items-center justify-content-center">
         <img src="/img/folder.svg" alt="Folders" style="width: 50px; height: 50px; margin-right: 15px;">
@@ -41,3 +90,48 @@
     {{/each}}
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const personalTab = document.getElementById('personal-tab');
+    const accountTab = document.getElementById('account-tab');
+    const savePersonalBtn = document.getElementById('save-personal-btn');
+    const saveAccountBtn = document.getElementById('save-account-btn');
+
+    personalTab.addEventListener('shown.bs.tab', () => {
+      savePersonalBtn.style.display = 'inline-block';
+      saveAccountBtn.style.display = 'none';
+    });
+
+    accountTab.addEventListener('shown.bs.tab', () => {
+      savePersonalBtn.style.display = 'none';
+      saveAccountBtn.style.display = 'inline-block';
+    });
+  });
+
+  document.querySelector('#edit-account-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value.trim();
+    const errorDiv = document.getElementById('username-error');
+
+    try {
+      const response = await fetch('/edit_account_info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        location.reload();
+      } else {
+        errorDiv.textContent = result.message;
+        errorDiv.style.display = 'block';
+      } 
+      } catch (err) {
+        console.error("Error updating username:", err);
+        errorDiv.textContent = "Error updating username";
+        errorDiv.style.display = 'block';
+      }
+    });
+</script>
