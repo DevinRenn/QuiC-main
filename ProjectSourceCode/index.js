@@ -331,6 +331,12 @@ app.post('/create_folder', async (req, res) => {
 // Create set in folder
 app.post('/create_set', async (req, res) => {
   const { set_name, set_description, folder_id } = req.body;
+  
+    // Check if set name is empty
+    if (!set_name || set_name.trim() === ''){
+    return res.json({ success: false, message: 'Set name cannot be empty' });
+  }
+
   try {
     // Check if a set with the same name exists in the same folder
     const exists = await db.oneOrNone(
