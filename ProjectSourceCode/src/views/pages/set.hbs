@@ -12,6 +12,46 @@
   transform: scale(1);
   z-index: -1;
 }
+
+.btn-active {
+  background-color: #b01e1e !important;
+  border-color: #b01e1e !important;
+  color: white !important;
+}
+
+.btn-active:hover {
+  background-color: #b01e1e !important;
+  border-color: #b01e1e !important;
+  color: white !important;
+}
+
+.btn-active:focus,
+.btn-active:active {
+  background-color: #b01e1e !important;
+  border-color: #b01e1e !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+#editBtn:focus,
+#editBtn:active,
+#studyBtn:focus,
+#studyBtn:active {
+  background-color: #b01e1e !important;
+  border-color: #b01e1e !important;
+  box-shadow: none !important;
+}
+
+#editBtn.btn-active:focus,
+#editBtn.btn-active:active,
+#studyBtn.btn-active:focus,
+#studyBtn.btn-active:active {
+  background-color: #b01e1e !important;
+  border-color: #b01e1e !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
 </style>
 
 <div class="bg-wrapper">
@@ -206,6 +246,9 @@ document.addEventListener("DOMContentLoaded", () => {
     carousel.style.display = "block";
     flashBtn.style.display = "none";
 
+    studyBtn.classList.add("btn-active");
+    editBtn.classList.remove("btn-active");
+
     const setId = document.getElementById("setIdValue").dataset.setid;
     const res = await fetch(`/sets/${setId}/cards`);
     const data = await res.json();
@@ -220,6 +263,9 @@ document.addEventListener("DOMContentLoaded", () => {
     carousel.style.display = "none";
     flashcardList.style.display = "block";
     flashBtn.style.display = "block";
+
+    editBtn.classList.add("btn-active");
+    studyBtn.classList.remove("btn-active");
   });
 
   // Submit flashcard
@@ -284,5 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  editBtn.classList.add("btn-active");
 });
 </script>
