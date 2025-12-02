@@ -336,6 +336,9 @@ app.post('/create_set', async (req, res) => {
     if (!set_name || set_name.trim() === ''){
     return res.json({ success: false, message: 'Set name cannot be empty' });
   }
+    if (!set_description || set_description.trim() === ''){
+      return res.json({ success: false, message: 'Set description cannot be empty' });
+    }
 
   try {
     // Check if a set with the same name exists in the same folder
