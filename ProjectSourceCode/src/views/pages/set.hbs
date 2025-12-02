@@ -82,13 +82,13 @@
         <form id="flashcard-form" action="/create_flashcard" method="POST">
           <input type="hidden" id="flashcard_set_id" name="set_id" value="{{setId}}">
           <div class="mb-3">
-            <label for="flashcard_name">Front text</label>
-            <textarea class="form-control" id="flashcard_name" name="flashcard_name" maxlength="300" rows="3" placeholder="Enter description (max 300 characters)" required></textarea>
+            <label for="flashcard_front_text">Front text</label>
+            <textarea class="form-control" id="flashcard_front_text" name="flashcard_front_text" maxlength="300" rows="3" placeholder="Enter description (max 300 characters)" required></textarea>
           </div>
 
           <div class="mb-3">
-            <label for="flashcard_description">Back text</label>
-            <textarea class="form-control" id="flashcard_description" name="flashcard_description" maxlength="300" rows="3" placeholder="Enter description (max 300 characters)" required></textarea>
+            <label for="flashcard_back_text">Back text</label>
+            <textarea class="form-control" id="flashcard_back_text" name="flashcard_back_text" maxlength="300" rows="3" placeholder="Enter description (max 300 characters)" required></textarea>
           </div>
         </form>
       </div>
@@ -272,13 +272,13 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const flashcard_name = document.getElementById("flashcard_name").value.trim();
-    const flashcard_description = document.getElementById("flashcard_description").value.trim();
+    const flashcard_front_text = document.getElementById("flashcard_front_text").value.trim();
+    const flashcard_back_text = document.getElementById("flashcard_back_text").value.trim();
     const set_id = document.getElementById("flashcard_set_id").value;
 
-    if (!flashcard_name || !flashcard_description) return;
+    if (!flashcard_front_text || !flashcard_back_text) return;
 
-    if (flashcard_description.length > 300) {
+    if (flashcard_back_text.length > 300) {
       alert("Description cannot exceed 300 characters.");
       return;
     }
@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/create_flashcard", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ flashcard_name, flashcard_description, set_id })
+        body: JSON.stringify({ flashcard_front_text, flashcard_back_text, set_id })
       });
 
       const result = await response.json();
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const cardId = result.flashcard.card_id;
-      addCardToList(flashcard_name, flashcard_description, cardId);
+      addCardToList(flashcard_front_text, flashcard_back_text, cardId);
 
       // Append to carousel
       const carouselInner = document.getElementById("carouselInner");
@@ -306,8 +306,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="carousel-item" data-cardid="${cardId}">
           <div class="flashcard click-flip mx-auto">
             <div class="flashcard-inner">
-              <div class="flashcard-front">${flashcard_name}</div>
-              <div class="flashcard-back">${flashcard_description}</div>
+              <div class="flashcard-front">${flashcard_front_text}</div>
+              <div class="flashcard-back">${flashcard_back_text}</div>
             </div>
           </div>
         </div>

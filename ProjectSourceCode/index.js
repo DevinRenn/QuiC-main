@@ -395,7 +395,7 @@ app.get('/sets/:setId', (req, res) => {
 
 
 app.post("/create_flashcard", async (req, res) => {
-  const { flashcard_name, flashcard_description, set_id} = req.body;
+  const { flashcard_front_text, flashcard_back_text, set_id} = req.body;
 
   try {
     // 1. Insert card
@@ -403,7 +403,7 @@ app.post("/create_flashcard", async (req, res) => {
       `INSERT INTO cards (front_text, back_text)
        VALUES ($1, $2)
        RETURNING card_id`,
-      [flashcard_name, flashcard_description]
+      [flashcard_front_text, flashcard_back_text]
     );
 
     
@@ -415,7 +415,7 @@ app.post("/create_flashcard", async (req, res) => {
     );
 
     // 3. Send back to frontend
-    //console.log("RESULTS: ", flashcard_name, flashcard_description, set_id);
+    console.log("RESULTS: ", flashcard_front_text, flashcard_back_text, set_id);
     res.json({ success: true, flashcard });
 
   } catch (err) {
