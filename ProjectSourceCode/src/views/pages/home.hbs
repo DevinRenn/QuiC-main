@@ -175,8 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // LINK to navigate to set.hbs page
         wrapper.innerHTML = `
           <a href="/sets/${set.set_id}" class="text-decoration-none text-dark">
-            <h3>${set.set_name}</h3>
-            <p>${set.set_description || ''}</p>
+            <h3 class="text-center">${set.set_name}</h3>
+            <p class="text-center">${set.set_description || ''}</p>
           </a>
         `;
 
