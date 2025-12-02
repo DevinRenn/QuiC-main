@@ -415,7 +415,7 @@ app.post("/create_flashcard", async (req, res) => {
     );
 
     // 3. Send back to frontend
-    console.log("RESULTS: ", flashcard_front_text, flashcard_back_text, set_id);
+    // console.log("RESULTS: ", flashcard_front_text, flashcard_back_text, set_id);
     res.json({ success: true, flashcard });
 
   } catch (err) {
