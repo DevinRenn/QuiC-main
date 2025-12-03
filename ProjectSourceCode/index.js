@@ -540,6 +540,24 @@ app.post("/edit_flashcard", async (req, res) => {
   }
 });
 
+app.post("/edit_folder", async (req, res) => {
+  const { folder_name, folder_id } = req.body;
+
+  try {
+    await db.none(
+      `UPDATE folders
+      SET folder_name = $1
+      WHERE folder_id = $2;`,
+      [folder_name, folder_id]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
+
 // Starts Server
 module.exports = app.listen(3000);
 console.log("Server is listening on port 3000");

@@ -42,8 +42,9 @@
     <div class="col-md-9">
       <div class="card" id="sets-card" style="display: none; margin-bottom: 75px;">
         <div class="card-body text-bg-primary">
-          <div class="d-flex justify-content-between align-items-center">
-            <h1 id="sets-title">Sets</h1>
+          <div class="d-flex justify-content-end align-items-center gap-2">
+            <h1 id="sets-title" class="me-auto">Sets</h1>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-folder-modal">Edit Folder</button>
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#set-modal">
               Create Set
             </button>
@@ -108,6 +109,31 @@
 </div>
 
 
+<!-- Modal for edit folder -->
+<div class="modal" tabindex="-1" id="edit-folder-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Folder</h5>
+      </div>
+      <div class="modal-body">
+        <form id="edit-folder-form" action="/edit_folder" method="POST">
+          <div class="mb-3">
+            <input type="hidden" id="edit_folder_id" name="folder_id" value="{{folderId}}">
+            <label for="edit_folder_name"></label>
+            <input type="text" class="form-control" id="edit_folder_name" name="folder_name">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="edit-folder-form">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   let selectedFolderId = null;
@@ -143,6 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedFolderId = folderId;
     document.getElementById('sets-title').textContent = `Sets in "${folderName}"`;
     document.getElementById('set_folder_id').value = folderId;
+    document.getElementById('edit_folder_id').value = folderId;
+    document.getElementById('edit_folder_name').value = folderName;
 
     // Remove highlight from all folder buttons
     document.querySelectorAll('#folders-container .btn').forEach(btn => {
@@ -233,6 +261,34 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error("Error creating set:", err);
       alert("Error creating set. See console for details.");
+    }
+  });
+
+  document.querySelector('#edit-folder-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const folder_name = document.getElementById('edit_folder_name').value.trim();
+    const folder_id = document.getElementById('edit_folder_id').value;
+
+    try {
+      const response = await fetch('/edit_folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_name, folder_id })
+      });
+      const result = await response.json();
+
+      if(result.success) {
+        loadFolders();
+        loadSets(folder_id);
+        document.getElementById('sets-title').textContent = `Sets in "${folder_name}"`;
+
+        bootstrap.Modal.getInstance(document.getElementById('edit-folder-modal')).hide();
+      } else {
+        alert(result.message || "Could not edit folder");
+      }
+    } catch (err) {
+      console.error("Error editing folder:", err);
+      alert("Error editing folder");
     }
   });
 
