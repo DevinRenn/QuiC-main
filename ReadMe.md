@@ -33,7 +33,10 @@
 - Wait a few seconds and you should be able to view the website.
 
 # How to Run the Tests:
-- 
+- In your text editor, direct yourself to the docker-compose.yaml file inside of the ProjectSourceCode folder.
+- Near the bottom of the docker-compose.yaml file, make sure command is set to 'npm run testandrun'
+- To run: docker compose up
+- This is will run all test cases and then run the program on localhost:3000 if all tests pass
 
 # Link to Deployed Application:
 - https://quic-service.onrender.com
