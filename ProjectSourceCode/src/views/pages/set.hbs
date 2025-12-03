@@ -70,6 +70,38 @@
   </button>
 </div>
 
+<!-- Edit flashcard modal -->
+<div class="modal" tabindex="-1" id="edit-flashcard-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Flashcard</h5>
+      </div>
+
+      <div class="modal-body">
+        <form id="edit-flashcard-form" action="/edit_flashcard" method="POST">
+          <input type="hidden" id="edit_flashcard_card_id" name="card_id">
+          <input type="hidden" id="edit_flashcard_set_id" name="set_id" value="{{setId}}">
+          <div class="mb-3">
+            <label for="edit_flashcard_front_text">Front text</label>
+            <textarea class="form-control" id="edit_flashcard_front_text" name="front_text" maxlength="300" rows="3" required></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="edit_flashcard_back_text">Back text</label>
+            <textarea class="form-control" id="edit_flashcard_back_text" name="back_text" maxlength="300" rows="3" required></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="edit-flashcard-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Flashcard modal -->
 <div class="modal" tabindex="-1" id="flashcard-modal">
   <div class="modal-dialog">
@@ -148,11 +180,14 @@ function addCardToList(front, back, cardId) {
   const newCard = `
     <div class="card mb-3 flashcard-item" data-cardid="${cardId}">
       <div class="row align-items-center">
-        <div class="col-md-4 col-12">
+        <div class="col-md-5 col-12">
           <h5 class="card-title mb-0">${front}</h5>
         </div>
-        <div class="col-md-7 col-12">
+        <div class="col-md-5 col-12">
           <p class="card-text mb-0">${back}</p>
+        </div>
+        <div class="col-md-1 col-12">
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-flashcard-modal" data-front="${front}" data-back="${back}" data-cardid="${cardId}">Edit</button>
         </div>
         <div class="col-md-1 col-12">
           <button type="button" class="delete-btn" style="background:none; border:none; padding:0;">
@@ -239,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const flashcardList = document.getElementById("flashcardList");
   const form = document.getElementById("flashcard-form");
   const flashcardModal = document.getElementById("flashcard-modal");
+  const editFlashcardModal = document.getElementById('edit-flashcard-modal');
 
   // Study mode
   studyBtn.addEventListener("click", async () => {
@@ -328,6 +364,21 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error submitting flashcard:", err);
       alert("An error occurred while saving the flashcard.");
     }
+  });
+
+  editFlashcardModal.addEventListener('show.bs.modal', function (event) {
+    // Get the button that triggered the modal
+  const button = event.relatedTarget;
+  
+  // Extract data from data attributes
+  const front = button.getAttribute('data-front');
+  const back = button.getAttribute('data-back');
+  const cardId = button.getAttribute('data-cardid');
+  
+  // Populate the form fields
+  document.getElementById('edit_flashcard_front_text').value = front;
+  document.getElementById('edit_flashcard_back_text').value = back;
+  document.getElementById('edit_flashcard_card_id').value = cardId;
   });
 
   editBtn.classList.add("btn-active");

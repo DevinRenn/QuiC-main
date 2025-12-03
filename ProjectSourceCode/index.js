@@ -473,8 +473,8 @@ app.delete("/cards/:cardId", async (req, res) => {
     console.error("Error deleting card:", err);
     res.json({ success: false, message: "Could not delete card" });
   }
-}
-);
+});
+
 app.post("/edit_personal_info", async (req, res) => {
   const { first_name, last_name } = req.body;
   const userId = req.session.user.user_id;
@@ -515,7 +515,25 @@ app.post("/edit_account_info", async (req, res) => {
         [username, userId]
     );
 
-    res.json({ success: true });
+    res.redirect('/profile');
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
+
+app.post("/edit_flashcard", async (req, res) => {
+  const { card_id, front_text, back_text, set_id } = req.body;
+
+  try {
+    await db.none(
+      `UPDATE cards
+      SET front_text = $1, back_text = $2
+      WHERE card_id = $3;`,
+      [front_text, back_text, card_id]
+    );
+
+    res.redirect(`/sets/${set_id}`)
   } catch (err) {
     console.error(err);
     res.json({ success: false, message: 'Database error' });
