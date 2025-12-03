@@ -33,8 +33,8 @@
   box-shadow: none !important;
 }
 
-#editBtn:focus,
-#editBtn:active,
+#editFlashcardBtn:focus,
+#editFlashcardBtn:active,
 #studyBtn:focus,
 #studyBtn:active {
   background-color: #b01e1e !important;
@@ -42,8 +42,8 @@
   box-shadow: none !important;
 }
 
-#editBtn.btn-active:focus,
-#editBtn.btn-active:active,
+#editFlashcardBtn.btn-active:focus,
+#editFlashcardBtn.btn-active:active,
 #studyBtn.btn-active:focus,
 #studyBtn.btn-active:active {
   background-color: #b01e1e !important;
@@ -57,17 +57,53 @@
 <div class="bg-wrapper">
 
 <!-- Allows JS to access setId -->
-<div id="setIdValue" data-setid="{{setId}}"></div>
+<div id="setIdValue" data-setid="{{setId}}" data-set-name="{{setName}}" data-set-description="{{setDescription}}"></div>
 
-<div class="d-flex justify-content-center gap-2 container" style="margin-top:3%;">
-  <button id="editBtn" type="button" class="btn btn-primary">Edit Flashcards</button>
+<div class="text-center mt-3">
+  <h1 class="fw-bold mb-0" style="color: #FFD447">{{setName}}</h1>
+  <h5 class="fw-bold" style="color: #FFD447">{{setDescription}}</h5>
+</div>
+
+<div class="d-flex justify-content-center gap-2 container mt-2">
+  <button id="editFlashcardBtn" type="button" class="btn btn-primary">Edit Flashcards</button>
   <button id="studyBtn" type="button" class="btn btn-primary">Study Flashcards</button>
 </div>
 
 <div class="d-flex justify-content-center gap-2" style="margin-top:10px;">
+  <button id="editSetBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit-set-modal">Edit Set</button>
   <button id="createBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flashcard-modal">
     Add Flashcard
   </button>
+</div>
+
+<!-- Edit set modal -->
+<div class="modal" tabindex="-1" id="edit-set-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Set</h5>
+      </div>
+
+      <div class="modal-body">
+        <form id="edit-set-form" action="/edit_set" method="POST">
+          <input type="hidden" id="edit_set_set_id" name="set_id" value="{{setId}}">
+          <div class="mb-3">
+            <label for="edit_set_name">Set name</label>
+            <textarea class="form-control" id="edit_set_name" name="set_name" maxlength="100" rows="2" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="edit_set_description">Set description</label>
+            <textarea class="form-control" id="edit_set_description" name="set_description" maxlength="300" rows="3" required></textarea>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="edit-set-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Edit flashcard modal -->
@@ -268,22 +304,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const studyBtn = document.getElementById("studyBtn");
-  const editBtn = document.getElementById("editBtn");
+  const editFlashcardBtn = document.getElementById("editFlashcardBtn");
   const carousel = document.getElementById("flashcardCarousel");
   const flashBtn = document.getElementById("createBtn");
+  const editSetBtn = document.getElementById("editSetBtn");
   const flashcardList = document.getElementById("flashcardList");
   const form = document.getElementById("flashcard-form");
   const flashcardModal = document.getElementById("flashcard-modal");
   const editFlashcardModal = document.getElementById('edit-flashcard-modal');
+  const editSetModal = document.getElementById('edit-set-modal');
 
   // Study mode
   studyBtn.addEventListener("click", async () => {
     flashcardList.style.display = "none";
     carousel.style.display = "block";
     flashBtn.style.display = "none";
+    editSetBtn.style.display = "none";
 
     studyBtn.classList.add("btn-active");
-    editBtn.classList.remove("btn-active");
+    editFlashcardBtn.classList.remove("btn-active");
 
     const setId = document.getElementById("setIdValue").dataset.setid;
     const res = await fetch(`/sets/${setId}/cards`);
@@ -295,12 +334,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Edit mode
-  editBtn.addEventListener("click", () => {
+  editFlashcardBtn.addEventListener("click", () => {
     carousel.style.display = "none";
     flashcardList.style.display = "block";
     flashBtn.style.display = "block";
+    editSetBtn.style.display = "block";
 
-    editBtn.classList.add("btn-active");
+    editFlashcardBtn.classList.add("btn-active");
     studyBtn.classList.remove("btn-active");
   });
 
@@ -381,6 +421,16 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('edit_flashcard_card_id').value = cardId;
   });
 
-  editBtn.classList.add("btn-active");
+  editFlashcardBtn.classList.add("btn-active");
+
+  editSetModal.addEventListener('show.bs.modal', function (event) {
+    const meta = document.getElementById('setIdValue');
+
+    const set_name = meta.dataset.setName;
+    const set_description = meta.dataset.setDescription;
+
+    document.getElementById('edit_set_name').value = set_name;
+    document.getElementById('edit_set_description').value = set_description;
+  })
 });
 </script>

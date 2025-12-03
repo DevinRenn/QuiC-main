@@ -396,10 +396,33 @@ app.get('/set', (req, res) => {
   res.render('pages/set');
 })
 
-app.get('/sets/:setId', (req, res) => {
+app.get('/sets/:setId', async (req, res) => {
   const setId = req.params.setId;
+  const userId = req.session.user.user_id;
 
-  res.render('pages/set', { setId });
+  try {
+    const set = await db.oneOrNone(
+      `SELECT s.set_name, s.set_description
+       FROM sets s
+       JOIN folders_to_sets fts ON s.set_id = fts.set_id
+       JOIN users_to_folders u2f ON fts.folder_id = u2f.folder_id
+       WHERE s.set_id = $1 AND u2f.user_id = $2`,
+      [setId, userId]
+    );
+
+    if (!set) {
+      return res.status(404).send('Set not found');
+    }
+
+    res.render('pages/set', {
+      setId,
+      setName: set.set_name,
+      setDescription: set.set_description,
+    });
+  } catch (err) {
+    console.error('Error loading set:', err);
+    res.status(500).send('Server error');
+  }
 });
 
 
@@ -554,6 +577,24 @@ app.post("/edit_folder", async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error(err);
+    res.json({ success: false, message: 'Database error' });
+  }
+});
+
+app.post("/edit_set", async (req, res) => {
+  const { set_id, set_name, set_description } = req.body;
+
+  try {
+    await db.none(
+      `UPDATE sets
+      SET set_name = $1, set_description = $2
+      WHERE set_id = $3;`,
+      [set_name, set_description, set_id]
+    );
+
+    res.redirect(`/sets/${set_id}`);
+  } catch (err) {
+    console.error('Error editing set:', err);
     res.json({ success: false, message: 'Database error' });
   }
 });
