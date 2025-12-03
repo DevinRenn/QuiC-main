@@ -399,10 +399,11 @@ app.get('/set', (req, res) => {
 app.get('/sets/:setId', async (req, res) => {
   const setId = req.params.setId;
   const userId = req.session.user.user_id;
+  const { error, openModal } = req.query;
 
   try {
     const set = await db.oneOrNone(
-      `SELECT s.set_name, s.set_description
+      `SELECT s.set_name, s.set_description, fts.folder_id
        FROM sets s
        JOIN folders_to_sets fts ON s.set_id = fts.set_id
        JOIN users_to_folders u2f ON fts.folder_id = u2f.folder_id
@@ -418,6 +419,11 @@ app.get('/sets/:setId', async (req, res) => {
       setId,
       setName: set.set_name,
       setDescription: set.set_description,
+      folderId:set.folder_id,
+      errorMessage: error === 'exists' 
+        ? 'A set with that name already exists in this folder.' 
+        : null,
+      reopenModal: openModal === '1'
     });
   } catch (err) {
     console.error('Error loading set:', err);
@@ -565,8 +571,22 @@ app.post("/edit_flashcard", async (req, res) => {
 
 app.post("/edit_folder", async (req, res) => {
   const { folder_name, folder_id } = req.body;
+  const userId = req.session.user.user_id;
 
   try {
+    // Check if folder already exists for this user
+    const exists = await db.oneOrNone(
+      `SELECT f.folder_id
+       FROM folders f
+       JOIN users_to_folders u2f ON f.folder_id = u2f.folder_id
+       WHERE f.folder_name = $1 AND u2f.user_id = $2`,
+      [folder_name, userId]
+    );
+
+    if (exists) {
+      return res.json({ success: false, message: 'Folder already exists for this user' });
+    }
+
     await db.none(
       `UPDATE folders
       SET folder_name = $1
@@ -582,9 +602,22 @@ app.post("/edit_folder", async (req, res) => {
 });
 
 app.post("/edit_set", async (req, res) => {
-  const { set_id, set_name, set_description } = req.body;
+  const { set_id, set_name, set_description, folder_id } = req.body;
 
   try {
+    // Check if a set with the same name exists in the same folder
+    const exists = await db.oneOrNone(
+      `SELECT s.set_id 
+       FROM sets s
+       JOIN folders_to_sets fts ON s.set_id = fts.set_id
+       WHERE s.set_name = $1 AND fts.folder_id = $2`,
+      [set_name, folder_id]
+    );
+
+    if (exists) {
+      return res.redirect(`/sets/${set_id}?error=exists&openModal=1`);
+    }
+
     await db.none(
       `UPDATE sets
       SET set_name = $1, set_description = $2

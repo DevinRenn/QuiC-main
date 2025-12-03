@@ -85,8 +85,14 @@
       </div>
 
       <div class="modal-body">
+        {{#if errorMessage}}
+          <div class="alert alert-danger">
+            {{errorMessage}}
+          </div>
+        {{/if}}
         <form id="edit-set-form" action="/edit_set" method="POST">
           <input type="hidden" id="edit_set_set_id" name="set_id" value="{{setId}}">
+          <input type="hidden" id="edit_set_folder_id" name="folder_id" value="{{folderId}}">
           <div class="mb-3">
             <label for="edit_set_name">Set name</label>
             <textarea class="form-control" id="edit_set_name" name="set_name" maxlength="100" rows="2" required></textarea>
@@ -432,5 +438,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('edit_set_name').value = set_name;
     document.getElementById('edit_set_description').value = set_description;
   })
+
+  const shouldReopen = "{{reopenModal}}" === "true" || "{{reopenModal}}" === "1";
+
+  if (shouldReopen) {
+    const editModal = new bootstrap.Modal(document.getElementById('edit-set-modal'));
+    editModal.show();
+  }
 });
 </script>
