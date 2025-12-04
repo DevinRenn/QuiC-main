@@ -17,6 +17,10 @@
 - HTML
 - Boostrap
 - Docker
+- Handlebars
+- NodeJS
+- Render
+- Git
 
 # Project Description:
 - This repository is for our website QuiC, it provides a fast, paperless way to create, store, and share flashcards easily. With an account, you can save your study materials and organize them into sets. This is designed to make studying more faster, simpler, and more efficient for exams, quizzes, learning a new topic, or reviewing on the go.
