@@ -20,7 +20,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      User was redirected to home page successfully.
   Scenario 2: Login Fails with Incorrect Password
     Description:
       The user enters a correct username but incorrect password.
@@ -36,7 +36,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      User was given error message saying "Incorrect password, please try again." and stayed on the login page.
 
 
 ***********************************
@@ -63,7 +63,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      User was correctly redirected to login page and they were added to the database. (Can confirm the user was added to database because the account can be logged in to).
   Scenario 2: Not all Required Fields Are Filled
     Description:
       The user has not entered anything for the any of the following fields: First Name, Last Name, Username, Password.
@@ -80,7 +80,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      The user was correctly prompted to "Please fill out this field." when any of the fields are empty.
   Scenario 3: Username Already Exists
     Description:
       The user fills all fields but the username they chose has already been taken by another user.
@@ -97,7 +97,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      User is given an error saying "Username already exists" and stays on register page.
 
 
 ***********************************
@@ -122,7 +122,7 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      The new flashcard is displayed with the other flashcards in the set and the flashcard is added to the database. (Can confirm flashcard was added to database because it persists if the page is refreshed).
   Scenario 2: Not all Required Fields are Filled
     Description:
       The user did not give an input for either the front or the back of the flashcard.
@@ -138,4 +138,4 @@ Test Scenarios:
     Information About Testers:
       The testers will be members of our team which fit the target demographic of college student.
     Actual Teest Results:
-      N/A
+      The user was correctly prompted to "Please fill out this field." when either of the fields are empty.
